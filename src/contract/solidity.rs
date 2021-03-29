@@ -1,10 +1,8 @@
 use super::Contract;
 use anyhow::Result;
 
-
-
-use std::process::Command;
 use crate::utils;
+use std::process::Command;
 
 pub struct SolidityContract {}
 
@@ -12,7 +10,7 @@ impl Contract for SolidityContract {
     fn build(&self, path: &str) -> Result<()> {
         let v = utils::glob_file_path(path, "sol")?;
         if v.is_empty() {
-            return Err(anyhow!("source file not find"))
+            return Err(anyhow!("source file not find"));
         }
 
         let output = Command::new("solc")
@@ -32,19 +30,18 @@ impl Contract for SolidityContract {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::env;
     use crate::contract::solidity::SolidityContract;
     use crate::contract::Contract;
+    use std::env;
 
     #[test]
     fn test_build() {
         let path = env::current_dir().unwrap();
         let path = path.join("data/helloworld");
         println!("current dir {:?}", path.to_str().unwrap());
-        let sol = SolidityContract{};
+        let sol = SolidityContract {};
         sol.build(path.to_str().unwrap()).unwrap()
     }
 }
