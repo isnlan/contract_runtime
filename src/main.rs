@@ -14,6 +14,7 @@ mod handler;
 mod model;
 mod repl;
 mod service;
+mod utils;
 
 pub fn init_logger() {
     use chrono::Local;

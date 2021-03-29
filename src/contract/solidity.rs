@@ -4,25 +4,13 @@ use std::fs;
 use std::path::Path;
 use std::ffi::OsStr;
 use std::process::Command;
+use crate::utils;
 
 pub struct SolidityContract {}
 
 impl Contract for SolidityContract {
     fn build(&self, path: &str) -> Result<()> {
-        let dir = fs::read_dir(path)?;
-
-        let v = dir.filter(|r|{
-            match r {
-                Ok(entry) => {
-                    let path= entry.path();
-                    path.extension() == Some(OsStr::new("sol"))
-                }
-                Err(err) => false,
-            }
-        }).map(|dir|String::from(dir.unwrap().path().to_str().unwrap()))
-            .collect::<Vec<String>>();
-        println!("{:?}", v);
-
+        let v = utils::glob_file_path(path, "sol")?;
         if v.is_empty() {
             return Err(anyhow!("source file not find"))
         }
