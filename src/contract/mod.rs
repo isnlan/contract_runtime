@@ -4,5 +4,5 @@ use std::path::Path;
 mod solidity;
 
 pub trait Contract {
-    fn build<P: AsRef<Path>>(&self, path: P) -> Result<()> ;
+    fn build(&self, path: &str) -> Result<()> ;
 }

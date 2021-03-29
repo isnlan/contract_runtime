@@ -2,8 +2,12 @@ use crate::config::Config;
 use actix_web::{middleware, App, HttpServer};
 use envconfig::Envconfig;
 use std::sync;
+
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate anyhow;
+
 mod config;
 mod contract;
 mod handler;
