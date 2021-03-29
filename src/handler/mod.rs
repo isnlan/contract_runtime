@@ -14,8 +14,8 @@ pub struct Controller {
 
 
 pub async fn list_chain(
-    req: web::Query<model::PageQuery>,
-    ctrl: web::Data<sync::Arc<Controller>>,
+    _req: web::Query<model::PageQuery>,
+    _ctrl: web::Data<sync::Arc<Controller>>,
 ) -> impl Responder {
     "ok"
 }

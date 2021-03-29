@@ -12,7 +12,7 @@ pub enum CommandType {
 
 impl CommandType {
     pub fn new(command: &str) -> CommandType {
-        let mut v = command.split(" ").map(|s|String::from(s)).collect::<Vec<String>>();
+        let v = command.split(" ").map(|s|String::from(s)).collect::<Vec<String>>();
 
         match v[0].as_ref() {
             "help" => CommandType::Help,

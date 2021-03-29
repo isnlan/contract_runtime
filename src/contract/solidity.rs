@@ -6,7 +6,7 @@ pub struct SolidityContract {
 }
 
 impl Contract for SolidityContract {
-    fn build(&self, path: &str) -> Result<()> {
+    fn build(&self, _path: &str) -> Result<()> {
         Ok(())
     }
 }
