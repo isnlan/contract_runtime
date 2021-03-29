@@ -8,6 +8,8 @@ mod repl;
 mod config;
 mod handler;
 mod model;
+mod service;
+mod contract;
 
 pub fn init_logger() {
     use chrono::Local;
