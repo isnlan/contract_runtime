@@ -283,6 +283,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28b2cd92db5cbd74e8e5028f7e27dd7aa3090e89e4f2a197cc7c8dfb69c7063b"
 
 [[package]]
+name = "app"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "anyhow",
+ "argparse",
+ "async-trait",
+ "chrono",
+ "cita-vm",
+ "config",
+ "env_logger 0.8.3",
+ "envconfig",
+ "ethereum-types",
+ "hex 0.4.3",
+ "log",
+ "serde 1.0.124",
+ "thiserror",
+]
+
+[[package]]
 name = "argparse"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -618,26 +638,6 @@ name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
-
-[[package]]
-name = "contract_runtime"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "anyhow",
- "argparse",
- "async-trait",
- "chrono",
- "cita-vm",
- "config",
- "env_logger 0.8.3",
- "envconfig",
- "ethereum-types",
- "hex 0.4.3",
- "log",
- "serde 1.0.124",
- "thiserror",
-]
 
 [[package]]
 name = "convert_case"

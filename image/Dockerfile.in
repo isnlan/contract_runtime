@@ -1,0 +1,14 @@
+FROM ubuntu:bionic
+
+RUN apt-get update \
+ && apt-get install -y \
+ libssl-dev \
+ libzmq3-dev
+
+WORKDIR /root/
+ENV PATH=$PATH:/root/bin \
+    CARGO_INCREMENTAL=0
+
+COPY target/release/app ./app
+CMD ["./app"]
+

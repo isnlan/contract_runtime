@@ -2,16 +2,16 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: pvc-blockchain-manager
+  name: pvc-contract-runtime
   labels:
     #    type: local
-    name: pvc-blockchain-manager
+    name: pvc-contract-runtime
 spec:
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteMany
-  storageClassName: blockchainmanagerclass
+  storageClassName: contractrtclass
   nfs:
     server: __NFS_SERVER__
     path: __NFS_PATH__
@@ -21,7 +21,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: blockchain-manager-claim
+  name: contract-runtime-claim
   namespace: __NAMESPACE__
 spec:
   accessModes:
@@ -29,7 +29,7 @@ spec:
   resources:
     requests:
       storage: 19Gi
-  storageClassName: blockchainmanagerclass
+  storageClassName: contractrtclass
   selector:
     matchLabels:
-      name: pvc-blockchain-manager
+      name: pvc-contract-runtime

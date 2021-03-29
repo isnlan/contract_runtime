@@ -27,7 +27,7 @@ spec:
             - name: RUST_LOG
               value: info
             - name: DATA_PATH
-              value: /shared/contract-runtime
+              value: /shared
           volumeMounts:
             - mountPath: /var/run
               name: run
@@ -40,4 +40,4 @@ spec:
             path: /var/run
         - name: sharedvolume
           persistentVolumeClaim:
-            claimName: blockchain-manager-claim
+            claimName: contract-runtime-claim

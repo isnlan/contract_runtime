@@ -1,5 +1,5 @@
 [package]
-name = "contract_runtime"
+name = "app"
 version = "0.1.0"
 authors = ["snlansky <snlan@live.cn>"]
 edition = "2018"
