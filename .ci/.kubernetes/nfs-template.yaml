@@ -1,0 +1,35 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pvc-blockchain-manager
+  labels:
+    #    type: local
+    name: pvc-blockchain-manager
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: blockchainmanagerclass
+  nfs:
+    server: __NFS_SERVER__
+    path: __NFS_PATH__
+
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: blockchain-manager-claim
+  namespace: __NAMESPACE__
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 19Gi
+  storageClassName: blockchainmanagerclass
+  selector:
+    matchLabels:
+      name: pvc-blockchain-manager

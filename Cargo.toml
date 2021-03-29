@@ -7,3 +7,17 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+cita-vm = "0.1.6"
+log = "0.4.0"
+env_logger = "0.8.2"
+envconfig = "0.9.1"
+ethereum-types = "0.4.2"
+hex = "0.4.2"
+argparse = "0.2.2"
+thiserror = "1.0.24"
+anyhow = "1.0.39"
+actix-web="3.3.2"
+config = "0.11.0"
+serde = "1.0.117"
+async-trait = "0.1.42"
+chrono = "0.4.19"

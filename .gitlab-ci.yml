@@ -1,0 +1,33 @@
+variables:
+
+build:
+  stage: build
+  tags:
+    - kchain
+  script:
+    - make docker
+
+test-deployment:
+  stage: deploy
+  environment:
+    name: testing
+  when: manual
+  tags:
+    - kchain
+  script:
+    - export KUBECONFIG=$HOME/.kube/config-${CI_ENVIRONMENT_NAME:0:4}
+    - make deploy-test
+
+prod-deployment:
+  stage: deploy
+  environment:
+    name: production
+  when: manual
+  only:
+    - master
+    - main
+  tags:
+    - kchain
+  script:
+    - export KUBECONFIG=$HOME/.kube/config-bcm
+    - make deploy-prod

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __DEPLOY_NAME__
+  namespace: __NAMESPACE__
+  labels:
+    app: __APP_LABEL__
+spec:
+  selector:
+    matchLabels:
+      app: __APP_LABEL__
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: __APP_LABEL__
+    spec:
+      containers:
+        - image: __IMAGE_FULL_NAME__
+          name: __CONTAINER_NAME__
+          env:
+            - name: RUST_LOG
+              value: info
+            - name: DATA_PATH
+              value: /shared/contract-runtime
+          volumeMounts:
+            - mountPath: /var/run
+              name: run
+            - mountPath: /shared
+              name: sharedvolume
+              subPath: contract-runtime
+      volumes:
+        - name: run
+          hostPath:
+            path: /var/run
+        - name: sharedvolume
+          persistentVolumeClaim:
+            claimName: blockchain-manager-claim
