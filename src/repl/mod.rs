@@ -1,5 +1,5 @@
 use argparse::{ArgumentParser, Store};
-use std::io::{stdout, stderr};
+use std::io::{stderr, stdout};
 
 #[derive(Debug, PartialEq)]
 pub enum CommandType {
@@ -12,7 +12,10 @@ pub enum CommandType {
 
 impl CommandType {
     pub fn new(command: &str) -> CommandType {
-        let v = command.split(" ").map(|s|String::from(s)).collect::<Vec<String>>();
+        let v = command
+            .split(" ")
+            .map(|s| String::from(s))
+            .collect::<Vec<String>>();
 
         match v[0].as_ref() {
             "help" => CommandType::Help,
@@ -28,8 +31,6 @@ impl CommandType {
                 }
 
                 CommandType::Command(input)
-
-
             }
             _ => CommandType::Unknown(command.to_string()),
         }
@@ -44,6 +45,9 @@ mod tests {
     fn test_new_command_tyep() {
         assert_eq!(CommandType::Help, CommandType::new("help"));
         assert_eq!(CommandType::Build, CommandType::new("build fs"));
-        assert_eq!(CommandType::Command(String::from("s")), CommandType::new("command --input s"));
+        assert_eq!(
+            CommandType::Command(String::from("s")),
+            CommandType::new("command --input s")
+        );
     }
 }

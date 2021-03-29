@@ -1,15 +1,15 @@
-use std::sync;
-use actix_web::{middleware, App, HttpServer};
 use crate::config::Config;
+use actix_web::{middleware, App, HttpServer};
 use envconfig::Envconfig;
+use std::sync;
 #[macro_use]
 extern crate log;
-mod repl;
 mod config;
+mod contract;
 mod handler;
 mod model;
+mod repl;
 mod service;
-mod contract;
 
 pub fn init_logger() {
     use chrono::Local;
@@ -47,7 +47,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .configure(handler::app_config)
     })
-        .bind(config.server_address)?
-        .run()
-        .await
+    .bind(config.server_address)?
+    .run()
+    .await
 }

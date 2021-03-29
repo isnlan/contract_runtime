@@ -1,7 +1,7 @@
 pub struct Service {}
 
-impl Service{
+impl Service {
     fn new() -> Self {
-        Service{}
+        Service {}
     }
 }
