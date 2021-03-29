@@ -12,7 +12,7 @@ pub fn glob_file_path<P: AsRef<Path>>(path: P, extension: &str) -> Result<Vec<St
                 let path= entry.path();
                 path.extension() == Some(OsStr::new(extension))
             }
-            Err(err) => false,
+            Err(_err) => false,
         }
     }).map(|dir|String::from(dir.unwrap().path().to_str().unwrap()))
         .collect::<Vec<String>>();
