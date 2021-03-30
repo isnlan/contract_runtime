@@ -37,3 +37,9 @@ impl ResponseError for BusinessError {
         HttpResponse::BadRequest().json(resp)
     }
 }
+
+impl From<anyhow::Error> for BusinessError {
+    fn from(err: anyhow::Error) -> Self {
+        BusinessError::InternalError {source:err }
+    }
+}

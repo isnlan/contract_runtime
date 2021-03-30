@@ -32,7 +32,7 @@ pub async fn build(
     ctrl: web::Data<sync::Arc<Controller>>,
 ) -> impl Responder {
     let c = req.into_inner();
-    ctrl.svc.build(&c.contract_type, &c.path).map_err(|e|BusinessError::InternalError {source:e})?;
+    ctrl.svc.build(&c.contract_type, &c.path)?;
     model::Response::ok("build success!").to_json_result()
 }
 
