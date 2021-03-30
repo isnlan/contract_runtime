@@ -31,7 +31,7 @@ pub async fn build(
 ) -> impl Responder {
     let c = req.into_inner();
     ctrl.svc.build(&c.contract_type, &c.path)?;
-    model::Response::ok("build success!").to_json_result()
+    model::Response::ok("build success!").json()
 }
 
 pub async fn setup(
