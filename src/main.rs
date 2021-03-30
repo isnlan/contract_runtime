@@ -14,6 +14,7 @@ mod handler;
 mod model;
 mod repl;
 mod service;
+mod error;
 mod utils;
 
 pub fn init_logger() {
@@ -44,7 +45,8 @@ async fn main() -> std::io::Result<()> {
     let config = Config::init_from_env().unwrap();
     info!("{:?}", config);
 
-    let ctrl = handler::Controller {};
+    let svc = service::Service::new();
+    let ctrl = handler::Controller::new(svc);
     let ctrl = sync::Arc::new(ctrl);
     HttpServer::new(move || {
         App::new()

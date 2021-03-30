@@ -5,12 +5,16 @@ const GO_COMPILER:&str = "go";
 const LDFLAGS: &str = "-w -extldflags \"-static\"";
 
 pub struct  Chaincode {
-
 }
 
 impl Chaincode {
+    pub const TYPE_ID: &'static str = "chaincode";
 
+    pub fn new() -> Self {
+        Chaincode{}
+    }
 }
+
 impl super::Contract for Chaincode {
     fn build(&self, path: &str) -> Result<()> {
         let binary = std::path::Path::new(path).join(".build/app");

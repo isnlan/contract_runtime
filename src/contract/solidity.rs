@@ -6,9 +6,17 @@ use std::process::Command;
 const SOLIDITY_COMPILER: &str = "solc";
 const ABI_GENERATOR: &str = "abigen";
 
-pub struct SolidityContract {}
+pub struct Solidity {}
 
-impl super::Contract for SolidityContract {
+impl Solidity {
+    pub const TYPE_ID: &'static str = "solidity";
+
+    pub fn new() -> Self {
+        Solidity {}
+    }
+}
+
+impl super::Contract for Solidity {
     fn build(&self, path: &str) -> Result<()> {
         let v = utils::glob_file_path(path, "sol")
             .with_context(|| format!("failed read source path {}", path))?;
@@ -66,7 +74,7 @@ impl super::Contract for SolidityContract {
 
 #[cfg(test)]
 mod tests {
-    use super::SolidityContract;
+    use super::Solidity;
     use std::env;
     use crate::contract::Contract;
 
@@ -75,7 +83,7 @@ mod tests {
         let path = env::current_dir().unwrap();
         let path = path.join("data/hellosol");
         println!("current dir {:?}", path.to_str().unwrap());
-        let sol = SolidityContract {};
+        let sol = Solidity {};
         sol.build(path.to_str().unwrap()).unwrap()
     }
 }

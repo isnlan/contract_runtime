@@ -1,7 +1,16 @@
+use anyhow::Result;
+use crate::contract;
+
 pub struct Service {}
 
 impl Service {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Service {}
+    }
+
+    pub fn build(&self, contract_type: &str, path: &str) -> Result<()> {
+        let c = contract::new(contract_type);
+        c.build(path)?;
+        Ok(())
     }
 }
