@@ -18,7 +18,7 @@ impl ResponseError for HttpResponseError {
         use log::error;
         error!("error: {:}", self.0.to_string());
         let resp = Response::err(500, &self.0.to_string());
-        HttpResponse::BadRequest().json(resp)
+        HttpResponse::Ok().json(resp)
     }
 }
 
