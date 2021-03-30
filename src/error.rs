@@ -5,27 +5,25 @@ use std::fmt::Formatter;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub struct BusinessError {
-    err: anyhow::Error,
-}
+pub struct HttpResponseError(anyhow::Error);
 
-impl fmt::Display for BusinessError {
+impl fmt::Display for HttpResponseError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.err.fmt(f)
+        self.0.fmt(f)
     }
 }
 
-impl ResponseError for BusinessError {
+impl ResponseError for HttpResponseError {
     fn error_response(&self) -> HttpResponse {
         use log::error;
-        error!("error: {:}", self.err.to_string());
-        let resp = Response::err(500, &self.err.to_string());
+        error!("error: {:}", self.0.to_string());
+        let resp = Response::err(500, &self.0.to_string());
         HttpResponse::BadRequest().json(resp)
     }
 }
 
-impl From<anyhow::Error> for BusinessError {
+impl From<anyhow::Error> for HttpResponseError {
     fn from(err: anyhow::Error) -> Self {
-        BusinessError { err }
+        HttpResponseError(err)
     }
 }

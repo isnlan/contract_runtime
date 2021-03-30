@@ -28,7 +28,7 @@ impl<T: Serialize> Response<T> {
         }
     }
 
-    pub fn to_json_result(&self) -> Result<HttpResponse, error::BusinessError> {
+    pub fn to_json_result(&self) -> Result<HttpResponse, error::HttpResponseError> {
         Ok(HttpResponse::Ok().json(self))
     }
 }
