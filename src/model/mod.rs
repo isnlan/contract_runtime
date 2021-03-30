@@ -3,7 +3,7 @@ mod request;
 use actix_web::HttpResponse;
 pub use request::*;
 use serde::{Deserialize, Serialize};
-use anyhow::Result;
+use crate::error;
 
 const SUCCESS_CODE: i32 = 0;
 const SUCCESS_MSG: &str = "ok";
@@ -28,7 +28,7 @@ impl<T: Serialize> Response<T> {
         }
     }
 
-    pub fn to_json_result(&self) -> Result<HttpResponse> {
+    pub fn to_json_result(&self) -> Result<HttpResponse, error::BusinessError> {
         Ok(HttpResponse::Ok().json(self))
     }
 }
