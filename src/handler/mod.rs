@@ -1,4 +1,3 @@
-use crate::error::BusinessError;
 use crate::{model, service};
 use actix_web::{web, Responder};
 use std::sync;
