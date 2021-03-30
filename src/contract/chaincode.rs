@@ -1,0 +1,50 @@
+use anyhow::{Result, Context};
+use std::process::Command;
+
+const GO_COMPILER:&str = "go";
+const LDFLAGS: &str = "-w -extldflags \"-static\"";
+
+pub struct  Chaincode {
+
+}
+
+impl Chaincode {
+
+}
+impl super::Contract for Chaincode {
+    fn build(&self, path: &str) -> Result<()> {
+        let binary = std::path::Path::new(path).join(".build/app");
+
+        let output = Command::new(GO_COMPILER)
+            .arg("build")
+            .arg("-ldflags")
+            .arg(LDFLAGS)
+            .arg("-o")
+            .arg(binary)
+            .arg(path)
+            .current_dir(path)
+            .output()
+            .with_context(|| "failed to compile source")?;
+        if !output.stderr.is_empty() {
+            return Err(anyhow!(String::from_utf8(output.stderr)?));
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Chaincode;
+    use std::env;
+    use crate::contract::Contract;
+
+    #[test]
+    fn test_build() {
+        let path = env::current_dir().unwrap();
+        let path = path.join("data/hellogo");
+        println!("current dir {:?}", path.to_str().unwrap());
+        let sol = Chaincode {};
+        sol.build(path.to_str().unwrap()).unwrap()
+    }
+}

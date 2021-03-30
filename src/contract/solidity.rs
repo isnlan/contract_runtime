@@ -1,4 +1,3 @@
-use super::Contract;
 use anyhow::{Context, Result};
 
 use crate::utils;
@@ -9,7 +8,7 @@ const ABI_GENERATOR: &str = "abigen";
 
 pub struct SolidityContract {}
 
-impl Contract for SolidityContract {
+impl super::Contract for SolidityContract {
     fn build(&self, path: &str) -> Result<()> {
         let v = utils::glob_file_path(path, "sol")
             .with_context(|| format!("failed read source path {}", path))?;
@@ -35,14 +34,14 @@ impl Contract for SolidityContract {
         if bin_file.is_empty() {
             return Err(anyhow!("*.bin file not generate"));
         }
+
         let abi_file =
             utils::glob_file_path(path, "abi").with_context(|| "failed generate *.abi file")?;
         if bin_file.is_empty() {
             return Err(anyhow!("*.abi file not generate"));
         }
 
-        let path_entry = std::path::Path::new(path);
-        let go_main_path = path_entry.join("main.go");
+        let go_main_path = std::path::Path::new(path).join("main.go");
         let output = Command::new(ABI_GENERATOR)
             .arg("--bin")
             .arg(&bin_file[0])
@@ -67,14 +66,14 @@ impl Contract for SolidityContract {
 
 #[cfg(test)]
 mod tests {
-    use crate::contract::solidity::SolidityContract;
-    use crate::contract::Contract;
+    use super::SolidityContract;
     use std::env;
+    use crate::contract::Contract;
 
     #[test]
     fn test_build() {
         let path = env::current_dir().unwrap();
-        let path = path.join("data/helloworld");
+        let path = path.join("data/hellosol");
         println!("current dir {:?}", path.to_str().unwrap());
         let sol = SolidityContract {};
         sol.build(path.to_str().unwrap()).unwrap()
