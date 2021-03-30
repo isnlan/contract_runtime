@@ -1,9 +1,9 @@
 mod request;
 
+use crate::error;
 use actix_web::HttpResponse;
 pub use request::*;
 use serde::{Deserialize, Serialize};
-use crate::error;
 
 const SUCCESS_CODE: i32 = 0;
 const SUCCESS_MSG: &str = "ok";

@@ -1,17 +1,16 @@
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
 use std::process::Command;
 
-const GO_COMPILER:&str = "go";
+const GO_COMPILER: &str = "go";
 const LDFLAGS: &str = "-w -extldflags \"-static\"";
 
-pub struct  Chaincode {
-}
+pub struct Chaincode {}
 
 impl Chaincode {
     pub const TYPE_ID: &'static str = "chaincode";
 
     pub fn new() -> Self {
-        Chaincode{}
+        Chaincode {}
     }
 }
 
@@ -40,8 +39,8 @@ impl super::Contract for Chaincode {
 #[cfg(test)]
 mod tests {
     use super::Chaincode;
-    use std::env;
     use crate::contract::Contract;
+    use std::env;
 
     #[test]
     fn test_build() {

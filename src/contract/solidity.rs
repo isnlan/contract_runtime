@@ -75,8 +75,8 @@ impl super::Contract for Solidity {
 #[cfg(test)]
 mod tests {
     use super::Solidity;
-    use std::env;
     use crate::contract::Contract;
+    use std::env;
 
     #[test]
     fn test_build() {

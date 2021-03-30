@@ -10,11 +10,11 @@ extern crate anyhow;
 
 mod config;
 mod contract;
+mod error;
 mod handler;
 mod model;
 mod repl;
 mod service;
-mod error;
 mod utils;
 
 pub fn init_logger() {

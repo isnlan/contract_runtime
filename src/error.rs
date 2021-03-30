@@ -1,45 +1,31 @@
 use crate::model::Response;
 use actix_web::{HttpResponse, ResponseError};
+use std::fmt;
+use std::fmt::Formatter;
 use thiserror::Error;
 
-
 #[derive(Error, Debug)]
-pub enum BusinessError {
-    #[error("10001#Validation error on field: {field}")]
-    ValidationError { field: String },
-    #[error("10002#Argument error")]
-    ArgumentError,
-    #[error("10000#An internal error occurred. Please try again later.")]
-    InternalError {
-        #[source]
-        source: anyhow::Error,
-    },
+pub struct BusinessError {
+    err: anyhow::Error,
 }
 
-impl BusinessError {
-    fn to_code(&self) -> i32 {
-        let code = &self.to_string()[0..5];
-        code.parse().unwrap_or(-1)
-    }
-
-    fn to_message(&self) -> String {
-        self.to_string()[6..].to_owned()
+impl fmt::Display for BusinessError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.err.fmt(f)
     }
 }
 
 impl ResponseError for BusinessError {
     fn error_response(&self) -> HttpResponse {
         use log::error;
-        if let BusinessError::InternalError { source } = self {
-            error!("internal error: {:}", source.to_string());
-        };
-        let resp = Response::err(self.to_code(), &self.to_message());
+        error!("error: {:}", self.err.to_string());
+        let resp = Response::err(500, &self.err.to_string());
         HttpResponse::BadRequest().json(resp)
     }
 }
 
 impl From<anyhow::Error> for BusinessError {
     fn from(err: anyhow::Error) -> Self {
-        BusinessError::InternalError {source:err }
+        BusinessError { err }
     }
 }

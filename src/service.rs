@@ -1,5 +1,5 @@
-use anyhow::Result;
 use crate::contract;
+use anyhow::Result;
 
 pub struct Service {}
 
