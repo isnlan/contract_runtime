@@ -1,5 +1,5 @@
 [package]
-name = "crt"
+name = "app"
 version = "0.1.0"
 authors = ["snlansky <snlan@live.cn>"]
 readme = "README.md"
@@ -7,8 +7,6 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-name = "crt"
 
 [dependencies]
 cita-vm = "0.1.6"
@@ -28,7 +26,6 @@ chrono = "0.4.19"
 
 [workspace]
 members = [
-    "cmd",
     "protos",
     "libs/blockdb",
     "libs/consensus",
@@ -40,4 +37,3 @@ members = [
     "libs/peer",
 ]
 
-default-members = ["cmd"]
