@@ -5,7 +5,7 @@ use std::fmt::Formatter;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub struct HttpResponseError(anyhow::Error);
+pub struct HttpResponseError(pub anyhow::Error);
 
 impl fmt::Display for HttpResponseError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {

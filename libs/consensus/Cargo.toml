@@ -1,0 +1,26 @@
+[package]
+name = "consensus"
+version = "0.1.0"
+authors = ["snlansky <snlan@live.cn>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+protos = { path = "../../protos" }
+utils = { path = "../utils" }
+error = { path = "../error" }
+failure = "0.1.6"
+tonic = "0.3.1"
+prost = "0.6"
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
+async-stream = "0.3.0"
+prost-types = "0.6"
+async-trait = "0.1.42"
+log = "0.4"
+env_logger = "0.8.2"
+dashmap = "3.11.10"
+tokio = { version = "0.3", features = ["full"] }
+
+[dev-dependencies]
+futures = "0.3"

@@ -3,6 +3,16 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/cmd/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/blockdb/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/consensus/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/contract/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/error/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/identity/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/ledger/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/peer/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/utils/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/protos/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

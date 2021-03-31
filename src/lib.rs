@@ -37,24 +37,24 @@ pub fn init_logger() {
         .init();
     info!("env_logger initialized.");
 }
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    init_logger();
-
-    let config = Config::init_from_env().unwrap();
-    info!("{:?}", config);
-
-    let svc = service::Service::new();
-    let ctrl = handler::Controller::new(svc);
-    let ctrl = sync::Arc::new(ctrl);
-    HttpServer::new(move || {
-        App::new()
-            .data(ctrl.clone())
-            .wrap(middleware::Logger::default())
-            .configure(handler::app_config)
-    })
-    .bind(config.server_address)?
-    .run()
-    .await
-}
+//
+// #[actix_web::main]
+// async fn main() -> std::io::Result<()> {
+//     init_logger();
+//
+//     let config = Config::init_from_env().unwrap();
+//     info!("{:?}", config);
+//
+//     let svc = service::Service::new();
+//     let ctrl = handler::Controller::new(svc);
+//     let ctrl = sync::Arc::new(ctrl);
+//     HttpServer::new(move || {
+//         App::new()
+//             .data(ctrl.clone())
+//             .wrap(middleware::Logger::default())
+//             .configure(handler::app_config)
+//     })
+//     .bind(config.server_address)?
+//     .run()
+//     .await
+// }
