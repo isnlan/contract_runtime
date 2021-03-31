@@ -1,12 +1,12 @@
 use crate::keys;
 use crate::BlockStore;
 use error::*;
-use rocksdb::WriteBatch;
-use serde::de::DeserializeOwned;
 use protos::{
     tx_validation_code_from, Block, BlockchainInfo, Transaction, TxIdIndexValProto,
     TxValidationCode,
 };
+use rocksdb::WriteBatch;
+use serde::de::DeserializeOwned;
 use std::path::PathBuf;
 
 pub struct Store {

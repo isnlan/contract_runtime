@@ -13,7 +13,6 @@ pub type Error = anyhow::Error;
 pub use anyhow::anyhow;
 pub type Result<T> = anyhow::Result<T>;
 
-
 pub type RpcResult<T> = std::result::Result<Response<T>, Status>;
 
 pub fn into_rpc_response<T>(t: T) -> RpcResult<T> {
@@ -23,4 +22,3 @@ pub fn into_rpc_response<T>(t: T) -> RpcResult<T> {
 pub fn into_status(err: Error) -> Status {
     tonic::Status::unknown(err.to_string())
 }
-

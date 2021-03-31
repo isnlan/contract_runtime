@@ -38,8 +38,6 @@ pub fn init_logger() {
     info!("env_logger initialized.");
 }
 
-
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     init_logger();

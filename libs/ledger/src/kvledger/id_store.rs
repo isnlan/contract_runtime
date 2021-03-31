@@ -1,7 +1,7 @@
 use byteorder::WriteBytesExt;
 use error::*;
-use rocksdb::DB;
 use protos::Block;
+use rocksdb::DB;
 use std::io::Write;
 use std::path::PathBuf;
 

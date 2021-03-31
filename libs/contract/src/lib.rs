@@ -2,8 +2,8 @@ mod stub;
 pub use stub::*;
 
 mod shim;
-pub use shim::*;
 use protos::*;
+pub use shim::*;
 
 pub trait Contract {
     fn init<'a>(&self, stub: &'a mut ContractStub) -> Response;
