@@ -11,10 +11,10 @@ use std::path::{Path, PathBuf};
 ///             index
 ///         chain2
 ///             ...
-pub fn ledger_provider_path(root_fs_path: impl Into<PathBuf>) -> PathBuf {
-    root_fs_path.into().join("ledger-provider")
+pub fn block_store_path(root_fs_path: &PathBuf, ledger_id: &str) -> PathBuf {
+    root_fs_path.join("chains").join(ledger_id).join("blk-store")
 }
 
-pub fn state_db_path(root_fs_path: &PathBuf, ledger_id: &str) -> PathBuf {
-    root_fs_path.join("chains").join(ledger_id).join("statedb")
+pub fn chains_path(root_fs_path: &PathBuf) -> PathBuf {
+    root_fs_path.join("chains")
 }

@@ -15,8 +15,6 @@ pub struct Store {
 
 impl Store {
     pub fn open(path: impl Into<PathBuf>) -> Result<Self> {
-        let path = path.into();
-        let path = path.join("blk_store");
         let db = rocksdb::DB::open_default(path)?;
         Ok(Store { db })
     }

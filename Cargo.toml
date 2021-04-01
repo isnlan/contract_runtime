@@ -23,6 +23,7 @@ config = "0.11.0"
 serde = "1.0.117"
 async-trait = "0.1.42"
 chrono = "0.4.19"
+utils = { path = "./libs/utils" }
 
 [workspace]
 members = [

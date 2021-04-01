@@ -6,14 +6,15 @@ pub mod provider;
 mod store;
 use error::*;
 use protos::*;
+mod file_path;
 
 pub trait BlockStoreProvider {
     type S: BlockStore;
-    fn create_block_store(ledger_id: &str) -> Result<Self::S>;
-    fn open_block_store(ledger_id: &str) -> Result<Self::S>;
-    fn exists(ledger_id: &str) -> Result<bool>;
-    fn list() -> Result<Vec<String>>;
-    fn close();
+    fn create_block_store(&self, ledger_id: &str) -> Result<Self::S>;
+    fn open_block_store(&self, ledger_id: &str) -> Result<Self::S>;
+    fn exists(&self, ledger_id: &str) -> Result<bool>;
+    fn list(&self) -> Result<Vec<String>>;
+    fn close(&self) {}
 }
 
 // BlockStore - an interface for persisting and retrieving blocks

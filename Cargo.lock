@@ -424,6 +424,7 @@ dependencies = [
  "log",
  "serde 1.0.124",
  "thiserror",
+ "utils",
 ]
 
 [[package]]
@@ -5267,7 +5268,9 @@ dependencies = [
  "protos",
  "rand 0.7.3",
  "sha2 0.8.2",
+ "tempfile",
  "tonic",
+ "walkdir",
 ]
 
 [[package]]

@@ -39,7 +39,7 @@ impl LedgerMgr<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>> {
             root_fs_path: "/var/silk/production".to_string(),
         };
         let vp = VersionedDBRocksProvider::new(&init.root_fs_path);
-        let bsp = LevelDBBlockStoreProvider::new();
+        let bsp = LevelDBBlockStoreProvider::new(&init.root_fs_path);
         let provider = Provider::new(init, vp, bsp)?;
         let l = LedgerMgr {
             opened_ledgers: DashMap::new(),
