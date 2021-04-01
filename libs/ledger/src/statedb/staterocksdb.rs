@@ -3,10 +3,10 @@ use error::*;
 use rocksdb::{WriteBatch, DB};
 
 use super::*;
+use crate::kvledger::file_path;
 use std::iter::Iterator;
 use std::path::PathBuf;
 use std::sync::Arc;
-use crate::kvledger::file_path;
 
 const DATA_KEY_PREFIX: u8 = b'd';
 const NS_KEY_SEP: u8 = 0x00;
@@ -35,10 +35,8 @@ impl VersionedDBProvider for VersionedDBRocksProvider {
             let name = String::from(id);
             let path = file_path::state_db_path(&self.path, id);
             let db = Arc::new(rocksdb::DB::open_default(path)?);
-            self.handler.insert(
-                name.clone(),
-                RocksDBVersion { db, name},
-            );
+            self.handler
+                .insert(name.clone(), RocksDBVersion { db, name });
         }
 
         let db = self.handler.get(id).unwrap();

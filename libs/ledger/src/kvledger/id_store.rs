@@ -1,11 +1,11 @@
 use crate::kvledger::file_path;
-use byteorder::WriteBytesExt;
+
 use error::*;
 use protos::Block;
 use rocksdb::DB;
 use std::io::Write;
-use std::ops::Deref;
-use std::path::{Path, PathBuf};
+
+use std::path::PathBuf;
 
 const LEDGER_KEY_PREFIX: u8 = b'l';
 

@@ -32,7 +32,7 @@ pub trait LedgerProvider {
     // list lists the ids of the existing ledgers
     fn list(&self) -> Result<Vec<String>>;
     // close closes the PeerLedgerProvider
-    fn close(&self){}
+    fn close(&self) {}
 }
 
 // Ledger differs from the OrdererLedger in that Ledger locally maintain a bitmask

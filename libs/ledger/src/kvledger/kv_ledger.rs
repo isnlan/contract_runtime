@@ -1,28 +1,28 @@
 use crate::kvledger::history;
 use crate::simulator::TxSimulator;
 use crate::QueryExecutor;
+use blockdb::BlockStore;
 use error::*;
 use protos::*;
-use blockdb::BlockStore;
 
-pub struct KVLedger<S: BlockStore>{
+pub struct KVLedger<S: BlockStore> {
     ledger_id: String,
     block_store: S,
     history_db: String,
     // stats
 }
 
-impl <S: BlockStore>KVLedger<S> {
+impl<S: BlockStore> KVLedger<S> {
     pub fn new(ledger_id: &str, store: S) -> Self {
         KVLedger {
             ledger_id: String::from(ledger_id),
-            block_store:store,
-            history_db: String::from("history db")
+            block_store: store,
+            history_db: String::from("history db"),
         }
     }
 }
 
-impl <S: BlockStore>crate::Ledger for KVLedger<S> {
+impl<S: BlockStore> crate::Ledger for KVLedger<S> {
     type HQE = history::KVHistoryQueryExecutor;
 
     fn get_blockchain_info(&self) -> Result<BlockchainInfo> {
