@@ -37,14 +37,18 @@ impl IDStore {
         Ok(v.is_some())
     }
 
+    pub fn delete_ledger_id(&self, ledger_id: &str) -> Result<()> {
+        let key = self.encode_ledger_key(ledger_id);
+        self.db.delete(key)?;
+        Ok(())
+    }
+
     pub fn get_active_ledger_ids(&self) -> Result<Vec<String>> {
         let iter = self.db.iterator(rocksdb::IteratorMode::From(
             &vec![LEDGER_KEY_PREFIX],
             rocksdb::Direction::Forward,
         ));
-        // while let Some((k,v )) = iter.next() {
-        //
-        // }
+
         let list = iter
             .take_while(|(k, _)| k[0] == LEDGER_KEY_PREFIX)
             .map(|(k, _)| {
@@ -85,6 +89,11 @@ mod tests {
         assert!(store.ledger_id_exists("chain1")?);
         let list = store.get_active_ledger_ids()?;
         assert_eq!(list, vec!["chain1", "chain2", "chain3"]);
+
+        store.delete_ledger_id("chain0")?;
+        store.delete_ledger_id("chain1")?;
+        assert!(!store.ledger_id_exists("chain1")?);
+
         Ok(())
     }
 }
