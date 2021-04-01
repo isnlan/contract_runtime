@@ -14,7 +14,7 @@ pub struct IDStore {
 }
 
 impl IDStore {
-    pub fn new(path: &str) -> Result<Self> {
+    pub fn new(path: impl Into<PathBuf>) -> Result<Self> {
         let path = file_path::ledger_provider_path(path);
         Ok(IDStore {
             db: rocksdb::DB::open_default(path)?,
@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn it_works() -> Result<()> {
         let temp_dir = TempDir::new().unwrap();
-        let store = IDStore::new(temp_dir.path().to_str().unwrap())?;
+        let store = IDStore::new(temp_dir.into_path())?;
         let blk = &Block {
             header: None,
             data: None,
