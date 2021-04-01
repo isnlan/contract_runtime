@@ -6,6 +6,7 @@ use super::*;
 use std::iter::Iterator;
 use std::path::PathBuf;
 use std::sync::Arc;
+use crate::kvledger::file_path;
 
 const DATA_KEY_PREFIX: u8 = b'd';
 const NS_KEY_SEP: u8 = 0x00;
@@ -13,17 +14,14 @@ const LAST_KEY_INDICATOR: u8 = 0x01;
 const SAVE_POINT_KEY: u8 = b's';
 
 pub struct VersionedDBRocksProvider {
-    db: Arc<DB>,
+    path: std::path::PathBuf,
     handler: DashMap<String, RocksDBVersion>,
 }
 
 impl VersionedDBRocksProvider {
     pub fn new(path: impl Into<PathBuf>) -> Self {
-        let path = path.into().join("version_db");
-        let db = DB::open_default(path).unwrap();
-
         VersionedDBRocksProvider {
-            db: Arc::new(db),
+            path: path.into(),
             handler: DashMap::new(),
         }
     }
@@ -32,20 +30,20 @@ impl VersionedDBRocksProvider {
 impl VersionedDBProvider for VersionedDBRocksProvider {
     type V = RocksDBVersion;
 
-    fn get_db_handle(&self, id: &str) -> RocksDBVersion {
+    fn get_db_handle(&self, id: &str) -> Result<RocksDBVersion> {
         if !self.handler.contains_key(id) {
+            let name = String::from(id);
+            let path = file_path::state_db_path(&self.path, id);
+            let db = Arc::new(rocksdb::DB::open_default(path)?);
             self.handler.insert(
-                id.to_string(),
-                RocksDBVersion {
-                    db: self.db.clone(),
-                    name: id.to_string(),
-                },
+                name.clone(),
+                RocksDBVersion { db, name},
             );
         }
 
         let db = self.handler.get(id).unwrap();
         let db = &*db;
-        db.clone()
+        Ok(db.clone())
     }
 }
 

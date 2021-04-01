@@ -13,7 +13,7 @@ pub use version::{are_same, Height};
 pub trait VersionedDBProvider {
     type V: VersionedDB;
     // get_db_handle returns a handle to a VersionedDB
-    fn get_db_handle(&self, id: &str) -> Self::V;
+    fn get_db_handle(&self, id: &str) -> Result<Self::V>;
     // close closes all the VersionedDB instances and releases any resources held by VersionedDBProvider
     fn close(&self) {}
 }
@@ -136,7 +136,7 @@ mod tests {
                 temp_dir.path().to_str().unwrap(),
             ),
         };
-        let vdb = support.s.get_db_handle("chain_id");
+        let vdb = support.s.get_db_handle("chain_id").unwrap();
 
         let mut batch = UpdateBatch::new();
         batch.put(
