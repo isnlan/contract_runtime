@@ -3,16 +3,19 @@ use error::*;
 use protos::Block;
 use rocksdb::DB;
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
+use crate::kvledger::file_path;
+use std::ops::Deref;
+
+const LEDGER_KEY_PREFIX: u8 = b'l';
 
 pub struct IDStore {
     db: DB,
 }
 
 impl IDStore {
-    pub fn new(path: impl Into<PathBuf>) -> Result<Self> {
-        let path = path.into();
-        let path = path.join("ledger_provider");
+    pub fn new(path: &str) -> Result<Self> {
+        let path = file_path::ledger_provider_path(path);
         Ok(IDStore {
             db: rocksdb::DB::open_default(path)?,
         })
@@ -34,10 +37,50 @@ impl IDStore {
         Ok(v.is_some())
     }
 
+    pub fn get_active_ledger_ids(&self) -> Result<Vec<String>> {
+        let iter = self.db.iterator(rocksdb::IteratorMode::From(&vec![LEDGER_KEY_PREFIX], rocksdb::Direction::Forward));
+        // while let Some((k,v )) = iter.next() {
+        //
+        // }
+        let list = iter.take_while(|(k,_)|  k[0] == LEDGER_KEY_PREFIX)
+            .map(|(k,_)|{
+                let k = &k[1..];
+                String::from_utf8(k.to_vec()).unwrap()
+            }).collect::<Vec<String>>();
+       Ok(list)
+    }
+
     fn encode_ledger_key(&self, ledger_id: &str) -> Vec<u8> {
-        let mut buf = vec![];
-        buf.write_u8(b'l').unwrap();
+        let mut buf = vec![LEDGER_KEY_PREFIX];
         let _ = buf.write(ledger_id.as_bytes()).unwrap();
         buf
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use tempfile::TempDir;
+    use super::IDStore;
+    use protos::Block;
+    use error::*;
+
+    #[test]
+    fn it_works() -> Result<()>{
+        let temp_dir = TempDir::new().unwrap();
+        let store = IDStore::new(temp_dir.path().to_str().unwrap())?;
+        let blk = &Block{
+            header: None,
+            data: None,
+            metadata: None
+        };
+        store.create_ledger_id("chain1", &blk)?;
+        store.create_ledger_id("chain2", &blk)?;
+        store.create_ledger_id("chain3", &blk)?;
+
+        assert!(store.ledger_id_exists("chain1")?);
+        let list = store.get_active_ledger_ids()?;
+        assert_eq!(list, vec!["chain1", "chain2", "chain3"]);
+        Ok(())
     }
 }
