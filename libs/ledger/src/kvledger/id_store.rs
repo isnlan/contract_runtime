@@ -1,11 +1,11 @@
+use crate::kvledger::file_path;
 use byteorder::WriteBytesExt;
 use error::*;
 use protos::Block;
 use rocksdb::DB;
 use std::io::Write;
-use std::path::{PathBuf, Path};
-use crate::kvledger::file_path;
 use std::ops::Deref;
+use std::path::{Path, PathBuf};
 
 const LEDGER_KEY_PREFIX: u8 = b'l';
 
@@ -38,16 +38,21 @@ impl IDStore {
     }
 
     pub fn get_active_ledger_ids(&self) -> Result<Vec<String>> {
-        let iter = self.db.iterator(rocksdb::IteratorMode::From(&vec![LEDGER_KEY_PREFIX], rocksdb::Direction::Forward));
+        let iter = self.db.iterator(rocksdb::IteratorMode::From(
+            &vec![LEDGER_KEY_PREFIX],
+            rocksdb::Direction::Forward,
+        ));
         // while let Some((k,v )) = iter.next() {
         //
         // }
-        let list = iter.take_while(|(k,_)|  k[0] == LEDGER_KEY_PREFIX)
-            .map(|(k,_)|{
+        let list = iter
+            .take_while(|(k, _)| k[0] == LEDGER_KEY_PREFIX)
+            .map(|(k, _)| {
                 let k = &k[1..];
                 String::from_utf8(k.to_vec()).unwrap()
-            }).collect::<Vec<String>>();
-       Ok(list)
+            })
+            .collect::<Vec<String>>();
+        Ok(list)
     }
 
     fn encode_ledger_key(&self, ledger_id: &str) -> Vec<u8> {
@@ -57,22 +62,21 @@ impl IDStore {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use tempfile::TempDir;
     use super::IDStore;
-    use protos::Block;
     use error::*;
+    use protos::Block;
+    use tempfile::TempDir;
 
     #[test]
-    fn it_works() -> Result<()>{
+    fn it_works() -> Result<()> {
         let temp_dir = TempDir::new().unwrap();
         let store = IDStore::new(temp_dir.path().to_str().unwrap())?;
-        let blk = &Block{
+        let blk = &Block {
             header: None,
             data: None,
-            metadata: None
+            metadata: None,
         };
         store.create_ledger_id("chain1", &blk)?;
         store.create_ledger_id("chain2", &blk)?;

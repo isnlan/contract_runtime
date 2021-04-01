@@ -1,4 +1,4 @@
-use std::path::{PathBuf, Path};
+use std::path::{Path, PathBuf};
 
 /// ledger path tree
 /// ledger
@@ -19,4 +19,3 @@ pub fn ledger_provider_path(root_fs_path: &str) -> PathBuf {
 pub fn chain_store_path(root_fs_path: &str) -> PathBuf {
     Path::new(root_fs_path).join("chains")
 }
-
