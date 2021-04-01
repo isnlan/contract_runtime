@@ -2,7 +2,7 @@ use crate::kvledger::id_store::IDStore;
 use crate::kvledger::kv_ledger::KVLedger;
 use crate::statedb::VersionedDBProvider;
 use crate::Initializer;
-use blockdb::BlockStoreProvider;
+use blockdb::{BlockStoreProvider, BlockStore};
 use error::*;
 use protos::Block;
 use utils::utils;
@@ -28,7 +28,7 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> Provider<VP, BSP> {
 }
 
 impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for Provider<VP, BSP> {
-    type L = KVLedger;
+    type L = KVLedger<BSP::S>;
 
     fn create(&self, genesis_block: &Block) -> Result<Self::L> {
         let ledger_id = utils::get_chain_id_from_block(genesis_block)?;
@@ -40,11 +40,12 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for
 
         // TODO: init block store
         // TODO: init history db
-        let _vdb = self.vdb_provider.get_db_handle(&ledger_id);
+        let vdb = self.vdb_provider.get_db_handle(&ledger_id)?;
 
-        let kvl = KVLedger::new();
+        let store = self.block_store_provider.create_block_store(&ledger_id)?;
 
-        Ok(kvl)
+        let l = KVLedger::new(&ledger_id, store);
+        Ok(l)
     }
 
     fn open(&self, _ledger_id: &str) -> Result<Self::L> {

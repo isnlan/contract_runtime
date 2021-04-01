@@ -37,12 +37,5 @@ pub trait BlockStore {
     ) -> Result<Option<Transaction>>;
     fn retrieve_block_by_txid(&self, tx_id: &str) -> Result<Option<Block>>;
     fn retrieve_tx_validation_code_by_txid(&self, tx_id: &str) -> Result<TxValidationCode>;
-    fn shutdown() {}
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn test() {}
+    fn shutdown(&self) {}
 }

@@ -2,6 +2,7 @@ use crate::simulator::TxSimulator;
 use crate::statedb::{Height, VersionedDB};
 use error::*;
 use protos::Block;
+use crate::simulator::sim::BasedTxSimulator;
 
 pub trait TxMgr {
     type T: TxSimulator;
@@ -14,6 +15,30 @@ pub trait TxMgr {
 
 pub struct LockBasedTxMgr<V: VersionedDB> {
     vdb: V,
+}
+
+impl <V: VersionedDB>TxMgr for LockBasedTxMgr<V> {
+    type T =   BasedTxSimulator<V>;
+
+    fn new_tx_simulator(txid: String) -> Result<Self::T> {
+        todo!()
+    }
+
+    fn validate_and_prepare(block: Block) -> Result<()> {
+        todo!()
+    }
+
+    fn get_last_savepoint() -> Result<Height> {
+        todo!()
+    }
+
+    fn should_recover(last_available_block: u64) -> Result<(bool, u64)> {
+        todo!()
+    }
+
+    fn commit() -> Result<()> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

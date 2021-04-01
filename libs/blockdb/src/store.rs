@@ -8,14 +8,16 @@ use protos::{
 use rocksdb::WriteBatch;
 use serde::de::DeserializeOwned;
 use std::path::PathBuf;
+use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Store {
-    db: rocksdb::DB,
+    db: Arc<rocksdb::DB>,
 }
 
 impl Store {
     pub fn open(path: impl Into<PathBuf>) -> Result<Self> {
-        let db = rocksdb::DB::open_default(path)?;
+        let db = Arc::new(rocksdb::DB::open_default(path.into())?);
         Ok(Store { db })
     }
 
