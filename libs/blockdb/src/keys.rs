@@ -5,7 +5,7 @@ use std::mem::size_of;
 pub const BLOCK_NUM_IDX_KEY_PREFIX: u8 = b'n';
 pub const BLOCK_HASH_IDX_KEY_PREFIX: u8 = b'h';
 pub const TX_ID_IDX_KEY_PREFIX: u8 = b't';
-pub const INDEX_CHECKPOINT_KEY_STR: &str = "index_check_point_key";
+pub const INDEX_CHECKPOINT_KEY_STR: &[u8] = b"index_check_point_key";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CheckPoint {
@@ -39,7 +39,7 @@ pub fn construct_tx_hash_key(tx_id: &str) -> Vec<u8> {
 }
 
 pub fn construct_check_point_key() -> Vec<u8> {
-    INDEX_CHECKPOINT_KEY_STR.as_bytes().to_vec()
+    INDEX_CHECKPOINT_KEY_STR.to_vec()
 }
 
 #[cfg(test)]
