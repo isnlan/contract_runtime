@@ -152,10 +152,6 @@ impl VersionedDB for RocksDBVersion {
     fn open(&self) -> Result<()> {
         unimplemented!()
     }
-
-    fn close(&self) {
-        unimplemented!()
-    }
 }
 
 #[warn(unused_unsafe)]

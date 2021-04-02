@@ -75,7 +75,7 @@ pub trait VersionedDB {
     fn open(&self) -> Result<()>;
 
     // close closes the db
-    fn close(&self);
+    fn close(&self){}
 }
 
 // VersionedValue encloses value and corresponding version
