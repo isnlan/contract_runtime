@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 protos = { path = "../../protos" }
+blockdb = { path = "../blockdb" }
 utils = { path = "../utils" }
 error = { path = "../error" }
 ledger = { path = "../ledger" }

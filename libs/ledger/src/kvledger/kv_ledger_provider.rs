@@ -29,7 +29,7 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> Provider<VP, BSP> {
 }
 
 impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for Provider<VP, BSP> {
-    type L = KVLedger<BSP::S, VP::V>;
+    type L = KVLedger<BSP::S, LockBasedTxMgr<VP::V>>;
 
     fn create(&self, genesis_block: &Block) -> Result<Self::L> {
         let ledger_id = utils::get_chain_id_from_block(genesis_block)?;
@@ -39,29 +39,37 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for
 
         self.id_store.create_ledger_id(&ledger_id, genesis_block)?;
 
-        // TODO: init block store
-        // TODO: init history db
         let vdb = self.vdb_provider.get_db_handle(&ledger_id)?;
+        // init in new kv ledger
+        let tx_mgmt = LockBasedTxMgr::new(&ledger_id, vdb);
 
         let store = self.block_store_provider.create_block_store(&ledger_id)?;
 
-        let l = KVLedger::new(&ledger_id, store, vdb);
-        Ok(l)
+        let ledger = KVLedger::new(&ledger_id, store, tx_mgmt);
+        Ok(ledger)
     }
 
-    fn open(&self, _ledger_id: &str) -> Result<Self::L> {
-        unimplemented!()
+    fn open(&self, ledger_id: &str) -> Result<Self::L> {
+        let exist = self.id_store.ledger_id_exists(ledger_id)?;
+        if !exist {
+            return Err(anyhow!("LedgerID does not exist"));
+        }
+
+        let vdb = self.vdb_provider.get_db_handle(&ledger_id)?;
+        // init in new kv ledger
+        let tx_mgmt = LockBasedTxMgr::new(&ledger_id, vdb);
+
+        let store = self.block_store_provider.open_block_store(&ledger_id)?;
+
+        let ledger = KVLedger::new(&ledger_id, store, tx_mgmt);
+        Ok(ledger)
     }
 
-    fn exists(&self, _ledger_id: &str) -> Result<bool> {
-        unimplemented!()
+    fn exists(&self, ledger_id: &str) -> Result<bool> {
+        self.id_store.ledger_id_exists(ledger_id)
     }
 
     fn list(&self) -> Result<Vec<String>> {
-        unimplemented!()
-    }
-
-    fn close(&self) {
-        unimplemented!()
+        self.id_store.get_active_ledger_ids()
     }
 }

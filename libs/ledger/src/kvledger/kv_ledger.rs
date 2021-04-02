@@ -7,25 +7,25 @@ use protos::*;
 use crate::statedb::VersionedDB;
 use crate::txmgr::{TxMgr, LockBasedTxMgr};
 
-pub struct KVLedger<S: BlockStore, V: VersionedDB> {
+pub struct KVLedger<S: BlockStore, T: TxMgr> {
     ledger_id: String,
     block_store: S,
     history_db: String,
-    tx_mgmt: LockBasedTxMgr<V>,
+    tx_mgmt: T,
 }
 
-impl<S: BlockStore, V: VersionedDB> KVLedger<S, V> {
-    pub fn new(ledger_id: &str, store: S, vdb: V) -> Self {
+impl<S: BlockStore, T: TxMgr> KVLedger<S, T> {
+    pub fn new(ledger_id: &str, store: S, tx_mgmt: T) -> Self {
         KVLedger {
             ledger_id: String::from(ledger_id),
             block_store: store,
             history_db: String::from("history db"),
-            tx_mgmt: LockBasedTxMgr::new(ledger_id, vdb),
+            tx_mgmt,
         }
     }
 }
 
-impl<S: BlockStore, V: VersionedDB> crate::Ledger for KVLedger<S, V> {
+impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
     type HQE = history::KVHistoryQueryExecutor;
 
     fn get_blockchain_info(&self) -> Result<BlockchainInfo> {

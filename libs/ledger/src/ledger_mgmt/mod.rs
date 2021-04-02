@@ -14,6 +14,12 @@ pub struct LedgerMgr<P: LedgerProvider> {
 }
 
 impl<P: LedgerProvider> LedgerMgr<P> {
+    pub fn new(provider: P) -> Self {
+        LedgerMgr {
+            opened_ledgers: DashMap::new(),
+            ledger_provider: provider,
+        }
+    }
     pub fn create_ledger(&self, id: &str, genesis_block: &Block) -> Result<Arc<P::L>> {
         let l = Arc::new(self.ledger_provider.create(genesis_block)?);
         debug!("create ledger {:?}", id);
@@ -33,18 +39,3 @@ impl<P: LedgerProvider> LedgerMgr<P> {
     }
 }
 
-impl LedgerMgr<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>> {
-    pub fn new() -> Result<Self> {
-        let init = Initializer {
-            root_fs_path: "/var/silk/production".to_string(),
-        };
-        let vp = VersionedDBRocksProvider::new(&init.root_fs_path);
-        let bsp = LevelDBBlockStoreProvider::new(&init.root_fs_path);
-        let provider = Provider::new(init, vp, bsp)?;
-        let l = LedgerMgr {
-            opened_ledgers: DashMap::new(),
-            ledger_provider: provider,
-        };
-        Ok(l)
-    }
-}
