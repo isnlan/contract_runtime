@@ -6,11 +6,11 @@ use protos::Block;
 
 pub trait TxMgr {
     type T: TxSimulator;
-    fn new_tx_simulator(txid: String) -> Result<Self::T>;
-    fn validate_and_prepare(block: Block) -> Result<()>;
-    fn get_last_savepoint() -> Result<Height>;
-    fn should_recover(last_available_block: u64) -> Result<(bool, u64)>;
-    fn commit() -> Result<()>;
+    fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::T>;
+    fn validate_and_prepare(&self, block: &Block) -> Result<()>;
+    fn get_last_savepoint(&self) -> Result<Height>;
+    fn should_recover(&self, last_available_block: u64) -> Result<(bool, u64)>;
+    fn commit(&self) -> Result<()>;
 }
 
 pub struct LockBasedTxMgr<V: VersionedDB> {
@@ -30,23 +30,23 @@ impl<V: VersionedDB> LockBasedTxMgr<V> {
 impl<V: VersionedDB> TxMgr for LockBasedTxMgr<V> {
     type T = BasedTxSimulator<V>;
 
-    fn new_tx_simulator(_txid: String) -> Result<Self::T> {
+    fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::T> {
         todo!()
     }
 
-    fn validate_and_prepare(_block: Block) -> Result<()> {
+    fn validate_and_prepare(&self, block: &Block) -> Result<()> {
         todo!()
     }
 
-    fn get_last_savepoint() -> Result<Height> {
+    fn get_last_savepoint(&self) -> Result<Height> {
         todo!()
     }
 
-    fn should_recover(_last_available_block: u64) -> Result<(bool, u64)> {
+    fn should_recover(&self, last_available_block: u64) -> Result<(bool, u64)> {
         todo!()
     }
 
-    fn commit() -> Result<()> {
+    fn commit(&self) -> Result<()> {
         todo!()
     }
 }

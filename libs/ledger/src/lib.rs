@@ -44,26 +44,26 @@ pub trait Ledger {
     fn get_blockchain_info(&self) -> Result<BlockchainInfo>;
     // get_block_by_number returns block at a given height
     // block_number of  math.MaxUint64 will return last block
-    fn get_block_by_number(&self, block_number: u64) -> Result<Block>;
+    fn get_block_by_number(&self, block_number: u64) -> Result<Option<Block>>;
     // get_blocks_iterator returns an iterator that starts from `start_block_number`(inclusive).
     // The iterator is a blocking iterator i.e., it blocks till the next block gets available in the ledger
     // ResultsIterator contains type BlockHolder
     fn get_blocks_iterator(
         &self,
         start_block_number: u64,
-    ) -> Result<Box<dyn Iterator<Item = Block>>>;
+    ) -> Result<Box<dyn Iterator<Item = Result<Option<Block>>>>>;
     // get_transaction_by_id retrieves a transaction by id
-    fn get_transaction_by_id(&self, tx_id: String) -> Result<ProcessedTransaction>;
+    fn get_transaction_by_id(&self, tx_id: &str) -> Result<Option<ProcessedTransaction>>;
     // get_block_by_hash returns a block given it's hash
-    fn get_block_by_hash(&self, block_hash: Vec<u8>) -> Result<Block>;
+    fn get_block_by_hash(&self, block_hash: &[u8]) -> Result<Option<Block>>;
     // get_block_by_tx_id returns a block which contains a transaction
-    fn get_block_by_tx_id(&self, tx_id: String) -> Result<Block>;
+    fn get_block_by_tx_id(&self, tx_id: &str) -> Result<Option<Block>>;
     // get_tx_validation_code_by_tx_id returns reason code of transaction validation
-    fn get_tx_validation_code_by_tx_id(&self, tx_id: String) -> Result<TxValidationCode>;
+    fn get_tx_validation_code_by_tx_id(&self, tx_id: &str) -> Result<TxValidationCode>;
     // new_tx_simulator gives handle to a transaction simulator.
     // A client can obtain more than one 'TxSimulator's for parallel execution.
     // Any snapshoting/synchronization should be performed at the implementation level if required
-    fn new_tx_simulator(&self, txid: String) -> Result<Box<dyn TxSimulator>>;
+    fn new_tx_simulator(&self, tx_id: &str) -> Result<Box<dyn TxSimulator>>;
     // new_query_executor gives handle to a query executor.
     // A client can obtain more than one 'QueryExecutor's for parallel execution.
     // Any synchronization should be performed at the implementation level if required
@@ -76,7 +76,7 @@ pub trait Ledger {
     // TODO: add a new Commit() path that replaces commit_legacy() for the validation refactor described in FAB-12221
     fn commit_legacy(&self, block: Block) -> Result<()>;
     // close closes the ledger
-    fn close(&self);
+    fn close(&self){}
 }
 
 // SimpleQueryExecutor encapsulates basic functions

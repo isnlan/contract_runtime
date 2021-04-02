@@ -17,6 +17,7 @@ impl<P: LedgerProvider> LedgerMgr<P> {
             ledger_provider: provider,
         }
     }
+
     pub fn create_ledger(&self, id: &str, genesis_block: &Block) -> Result<Arc<P::L>> {
         let l = Arc::new(self.ledger_provider.create(genesis_block)?);
         debug!("create ledger {:?}", id);
@@ -33,5 +34,9 @@ impl<P: LedgerProvider> LedgerMgr<P> {
         let l = Arc::new(self.ledger_provider.open(id)?);
         self.opened_ledgers.insert(String::from(id), l.clone());
         Ok(l)
+    }
+
+    pub fn get_ledger_ids(&self) -> Result<Vec<String>> {
+        self.ledger_provider.list()
     }
 }
