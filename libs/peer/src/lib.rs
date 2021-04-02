@@ -7,11 +7,7 @@ use ledger::Initializer;
 
 pub mod peer;
 
-pub fn new() -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>> {
-    // let ledger_mgmt::ledger_mgmt
-    let init = Initializer {
-        root_fs_path: "/var/blink/production".to_string(),
-    };
+pub fn new(init: Initializer) -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>> {
     let vp = VersionedDBRocksProvider::new(&init.root_fs_path);
     let bsp = LevelDBBlockStoreProvider::new(&init.root_fs_path);
     let provider = Provider::new(init, vp, bsp)?;
