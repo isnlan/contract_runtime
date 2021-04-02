@@ -27,6 +27,7 @@ impl<S: BlockStore, T: TxMgr> KVLedger<S, T> {
 
 impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
     type HQE = history::KVHistoryQueryExecutor;
+    type TS = T::T;
 
     fn get_blockchain_info(&self) -> Result<BlockchainInfo> {
         self.block_store.get_blockchain_info()
@@ -69,10 +70,9 @@ impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
         self.block_store.retrieve_tx_validation_code_by_txid(tx_id)
     }
 
-    fn new_tx_simulator(&self, tx_id: &str) -> Result<Box<dyn TxSimulator>> {
+    fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::TS> {
         let sim = self.tx_mgmt.new_tx_simulator(tx_id)?;
-        // Ok(Box::new(sim))
-        unimplemented!()
+        Ok(sim)
     }
 
     fn new_query_executor(&self) -> Result<Box<dyn QueryExecutor>> {

@@ -39,6 +39,7 @@ pub trait LedgerProvider {
 // that tells apart valid transactions from invalid ones
 pub trait Ledger {
     type HQE: HistoryQueryExecutor;
+    type TS: TxSimulator;
 
     // get_blockchain_info returns basic info about blockchain
     fn get_blockchain_info(&self) -> Result<BlockchainInfo>;
@@ -63,7 +64,7 @@ pub trait Ledger {
     // new_tx_simulator gives handle to a transaction simulator.
     // A client can obtain more than one 'TxSimulator's for parallel execution.
     // Any snapshoting/synchronization should be performed at the implementation level if required
-    fn new_tx_simulator(&self, tx_id: &str) -> Result<Box<dyn TxSimulator>>;
+    fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::TS>;
     // new_query_executor gives handle to a query executor.
     // A client can obtain more than one 'QueryExecutor's for parallel execution.
     // Any synchronization should be performed at the implementation level if required
