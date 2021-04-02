@@ -1,7 +1,7 @@
 use crate::kvledger::id_store::IDStore;
 use crate::kvledger::kv_ledger::KVLedger;
 use crate::statedb::VersionedDBProvider;
-use crate::txmgr::{LockBasedTxMgr, TxMgr};
+use crate::txmgr::LockBasedTxMgr;
 use crate::Initializer;
 use blockdb::BlockStoreProvider;
 use error::*;

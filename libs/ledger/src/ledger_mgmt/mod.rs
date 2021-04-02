@@ -1,8 +1,6 @@
 use crate::LedgerProvider;
 use dashmap::DashMap;
 
-use crate::statedb::VersionedDBRocksProvider;
-use blockdb::provider::LevelDBBlockStoreProvider;
 use error::*;
 use protos::Block;
 use std::sync::Arc;

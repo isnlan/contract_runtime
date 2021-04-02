@@ -1,7 +1,7 @@
 use crate::kvledger::history;
 use crate::simulator::TxSimulator;
-use crate::statedb::VersionedDB;
-use crate::txmgr::{LockBasedTxMgr, TxMgr};
+
+use crate::txmgr::TxMgr;
 use crate::QueryExecutor;
 use blockdb::BlockStore;
 use error::*;
