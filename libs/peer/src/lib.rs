@@ -1,13 +1,13 @@
-use ledger::Initializer;
-use ledger::statedb::VersionedDBRocksProvider;
+use blockdb::provider::LevelDBBlockStoreProvider;
+use error::*;
 use ledger::kvledger::kv_ledger_provider::Provider;
 use ledger::ledger_mgmt::LedgerMgr;
-use error::*;
-use blockdb::provider::LevelDBBlockStoreProvider;
+use ledger::statedb::VersionedDBRocksProvider;
+use ledger::Initializer;
 
 pub mod peer;
 
-pub fn new() -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>>{
+pub fn new() -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>> {
     // let ledger_mgmt::ledger_mgmt
     let init = Initializer {
         root_fs_path: "/var/blink/production".to_string(),

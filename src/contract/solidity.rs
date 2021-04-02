@@ -36,14 +36,14 @@ impl super::Contract for Solidity {
             return Err(anyhow!(String::from_utf8(output.stderr)?));
         }
 
-        let bin_file =
-            utils::path::glob_file_path(path, "bin").with_context(|| "failed generate *.bin file")?;
+        let bin_file = utils::path::glob_file_path(path, "bin")
+            .with_context(|| "failed generate *.bin file")?;
         if bin_file.is_empty() {
             return Err(anyhow!("*.bin file not generate"));
         }
 
-        let abi_file =
-            utils::path::glob_file_path(path, "abi").with_context(|| "failed generate *.abi file")?;
+        let abi_file = utils::path::glob_file_path(path, "abi")
+            .with_context(|| "failed generate *.abi file")?;
         if bin_file.is_empty() {
             return Err(anyhow!("*.abi file not generate"));
         }

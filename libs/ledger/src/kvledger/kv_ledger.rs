@@ -1,11 +1,11 @@
 use crate::kvledger::history;
 use crate::simulator::TxSimulator;
+use crate::statedb::VersionedDB;
+use crate::txmgr::{LockBasedTxMgr, TxMgr};
 use crate::QueryExecutor;
 use blockdb::BlockStore;
 use error::*;
 use protos::*;
-use crate::statedb::VersionedDB;
-use crate::txmgr::{TxMgr, LockBasedTxMgr};
 
 pub struct KVLedger<S: BlockStore, T: TxMgr> {
     ledger_id: String,

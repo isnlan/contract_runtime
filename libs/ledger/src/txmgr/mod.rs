@@ -18,9 +18,12 @@ pub struct LockBasedTxMgr<V: VersionedDB> {
     vdb: V,
 }
 
-impl <V: VersionedDB>LockBasedTxMgr<V> {
+impl<V: VersionedDB> LockBasedTxMgr<V> {
     pub fn new(ledger_id: &str, vdb: V) -> Self {
-        Self{ledger_id:String::from(ledger_id), vdb}
+        Self {
+            ledger_id: String::from(ledger_id),
+            vdb,
+        }
     }
 }
 

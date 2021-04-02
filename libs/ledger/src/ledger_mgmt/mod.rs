@@ -1,5 +1,5 @@
 use crate::kvledger::kv_ledger_provider::Provider;
-use crate::{Initializer, LedgerProvider};
+use crate::LedgerProvider;
 use dashmap::DashMap;
 
 use crate::statedb::VersionedDBRocksProvider;
@@ -38,4 +38,3 @@ impl<P: LedgerProvider> LedgerMgr<P> {
         Ok(l)
     }
 }
-

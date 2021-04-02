@@ -1,17 +1,16 @@
 use crate::store::Store;
 
+use crate::file_path;
 use error::*;
 use std::path::PathBuf;
-use crate::file_path;
 
 pub struct LevelDBBlockStoreProvider {
     path: std::path::PathBuf,
-
 }
 
 impl LevelDBBlockStoreProvider {
     pub fn new(path: impl Into<PathBuf>) -> Self {
-        LevelDBBlockStoreProvider{path:path.into()}
+        LevelDBBlockStoreProvider { path: path.into() }
     }
 }
 
@@ -19,7 +18,7 @@ impl crate::BlockStoreProvider for LevelDBBlockStoreProvider {
     type S = Store;
 
     fn create_block_store(&self, ledger_id: &str) -> Result<Self::S> {
-       self.open_block_store(ledger_id)
+        self.open_block_store(ledger_id)
     }
 
     fn open_block_store(&self, ledger_id: &str) -> Result<Self::S> {
@@ -37,6 +36,3 @@ impl crate::BlockStoreProvider for LevelDBBlockStoreProvider {
         utils::path::list_sub_dir(file_path::chains_path(&self.path))
     }
 }
-
-
-

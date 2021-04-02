@@ -1,7 +1,7 @@
+use error::*;
 use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
-use error::*;
 
 pub fn glob_file_path<P: AsRef<Path>>(path: P, extension: &str) -> Result<Vec<String>> {
     let dir = fs::read_dir(path)?;
@@ -27,23 +27,21 @@ pub fn exists(path: impl Into<PathBuf>, sub: &str) -> bool {
 
 pub fn list_sub_dir(path: impl Into<PathBuf>) -> Result<Vec<String>> {
     let dir = path.into().read_dir()?;
-    let list = dir.filter(|r|{
-        match r {
-            Ok(entry) => {
-               entry.path().is_dir()
-            }
-            Err(_) => false
-        }
-    }).map(|dir|String::from(dir.unwrap().file_name().to_str().unwrap()))
+    let list = dir
+        .filter(|r| match r {
+            Ok(entry) => entry.path().is_dir(),
+            Err(_) => false,
+        })
+        .map(|dir| String::from(dir.unwrap().file_name().to_str().unwrap()))
         .collect();
     Ok(list)
 }
 
 #[cfg(test)]
 mod tests {
-    use tempfile::TempDir;
     use crate::path::{exists, list_sub_dir};
     use std::fs::File;
+    use tempfile::TempDir;
 
     #[test]
     fn it_works() {
