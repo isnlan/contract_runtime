@@ -14,7 +14,14 @@ pub trait TxMgr {
 }
 
 pub struct LockBasedTxMgr<V: VersionedDB> {
+    ledger_id: String,
     vdb: V,
+}
+
+impl <V: VersionedDB>LockBasedTxMgr<V> {
+    pub fn new(ledger_id: &str, vdb: V) -> Self {
+        Self{ledger_id:String::from(ledger_id), vdb}
+    }
 }
 
 impl<V: VersionedDB> TxMgr for LockBasedTxMgr<V> {

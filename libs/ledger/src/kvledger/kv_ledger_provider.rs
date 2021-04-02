@@ -6,6 +6,7 @@ use blockdb::BlockStoreProvider;
 use error::*;
 use protos::Block;
 use utils::utils;
+use crate::txmgr::{LockBasedTxMgr, TxMgr};
 
 pub struct Provider<VP: VersionedDBProvider, BSP: BlockStoreProvider> {
     id_store: IDStore,
@@ -28,7 +29,7 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> Provider<VP, BSP> {
 }
 
 impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for Provider<VP, BSP> {
-    type L = KVLedger<BSP::S>;
+    type L = KVLedger<BSP::S, VP::V>;
 
     fn create(&self, genesis_block: &Block) -> Result<Self::L> {
         let ledger_id = utils::get_chain_id_from_block(genesis_block)?;
@@ -40,11 +41,11 @@ impl<VP: VersionedDBProvider, BSP: BlockStoreProvider> crate::LedgerProvider for
 
         // TODO: init block store
         // TODO: init history db
-        let _vdb = self.vdb_provider.get_db_handle(&ledger_id)?;
+        let vdb = self.vdb_provider.get_db_handle(&ledger_id)?;
 
         let store = self.block_store_provider.create_block_store(&ledger_id)?;
 
-        let l = KVLedger::new(&ledger_id, store);
+        let l = KVLedger::new(&ledger_id, store, vdb);
         Ok(l)
     }
 
