@@ -78,7 +78,7 @@ pub trait Ledger {
     // TODO: add a new Commit() path that replaces commit_legacy() for the validation refactor described in FAB-12221
     fn commit_legacy(&self, block: Block) -> Result<()>;
     // close closes the ledger
-    fn close(&self){}
+    fn close(&self) {}
 }
 
 // SimpleQueryExecutor encapsulates basic functions

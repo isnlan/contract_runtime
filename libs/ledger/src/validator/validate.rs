@@ -21,7 +21,10 @@ impl<V: VersionedDB> Validator<V> {
         block: Block,
     ) -> Result<(UpdateBatch, Height, HashMap<String, TxValidationCode>)> {
         if let (Some(header), Some(data)) = (block.header, block.data) {
-            debug!("validate_and_prepare_batch for block number = {:}", header.number);
+            debug!(
+                "validate_and_prepare_batch for block number = {:}",
+                header.number
+            );
             let mut txs_filter = HashMap::new();
             let mut updates = PubAndHashUpdates::new();
 

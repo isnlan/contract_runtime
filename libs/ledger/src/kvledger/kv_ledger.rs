@@ -1,5 +1,4 @@
 use crate::kvledger::history;
-use crate::simulator::TxSimulator;
 
 use crate::txmgr::TxMgr;
 use crate::QueryExecutor;
@@ -52,8 +51,16 @@ impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
 
         let bytes = utils::proto::marshal(&tx.unwrap())?;
 
-        let code = self.block_store.retrieve_tx_validation_code_by_txid(tx_id)?;
-        let pt = ProcessedTransaction{ transaction_envelope: Some(Envelope{payload: bytes, signature: vec![]}), validation_code: code as i32};
+        let code = self
+            .block_store
+            .retrieve_tx_validation_code_by_txid(tx_id)?;
+        let pt = ProcessedTransaction {
+            transaction_envelope: Some(Envelope {
+                payload: bytes,
+                signature: vec![],
+            }),
+            validation_code: code as i32,
+        };
 
         Ok(Some(pt))
     }
@@ -83,7 +90,7 @@ impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
         unimplemented!()
     }
 
-    fn commit_legacy(&self, block: Block) -> Result<()> {
+    fn commit_legacy(&self, _block: Block) -> Result<()> {
         // self.tx_mgmt.validate_and_prepare(&block)
         unimplemented!()
     }

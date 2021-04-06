@@ -42,7 +42,7 @@ impl<V: VersionedDB> TxMgr for LockBasedTxMgr<V> {
         Ok(sim)
     }
 
-    fn validate_and_prepare(&self, block: &Block) -> Result<Vec<TxStatInfo>> {
+    fn validate_and_prepare(&self, _block: &Block) -> Result<Vec<TxStatInfo>> {
         todo!()
     }
 
@@ -50,7 +50,7 @@ impl<V: VersionedDB> TxMgr for LockBasedTxMgr<V> {
         todo!()
     }
 
-    fn should_recover(&self, last_available_block: u64) -> Result<(bool, u64)> {
+    fn should_recover(&self, _last_available_block: u64) -> Result<(bool, u64)> {
         todo!()
     }
 
@@ -69,8 +69,8 @@ mod tests {
     use crate::statedb::{
         Height, VersionedDB, VersionedDBProvider, VersionedDBRocksProvider, VersionedValue,
     };
-    use tempfile::TempDir;
     use crate::validator::validate::Validator;
+    use tempfile::TempDir;
 
     #[test]
     fn it_works() {

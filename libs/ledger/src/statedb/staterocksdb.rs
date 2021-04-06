@@ -37,12 +37,15 @@ impl VersionedDBProvider for VersionedDBRocksProvider {
                 Ok(db.clone())
             }
             None => {
-                    let name = String::from(id);
-                    let path = file_path::state_db_path(&self.path, id);
-                    let db = Arc::new(rocksdb::DB::open_default(path)?);
-                    let vdb = RocksDBVersion{db, name: name.clone()};
-                    self.handler.insert(name, vdb.clone());
-                    Ok(vdb)
+                let name = String::from(id);
+                let path = file_path::state_db_path(&self.path, id);
+                let db = Arc::new(rocksdb::DB::open_default(path)?);
+                let vdb = RocksDBVersion {
+                    db,
+                    name: name.clone(),
+                };
+                self.handler.insert(name, vdb.clone());
+                Ok(vdb)
             }
         }
     }
