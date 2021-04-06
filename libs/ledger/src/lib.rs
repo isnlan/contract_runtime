@@ -11,6 +11,7 @@ pub mod rwset;
 pub mod simulator;
 pub mod statedb;
 pub mod txmgr;
+pub mod validator;
 
 // Initializer encapsulates dependencies for LedgerProvider
 pub struct Initializer {

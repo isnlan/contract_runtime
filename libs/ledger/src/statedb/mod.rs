@@ -19,7 +19,7 @@ pub trait VersionedDBProvider {
 }
 
 // VersionedDB lists methods that a db is supposed to implement
-pub trait VersionedDB {
+pub trait VersionedDB: Clone {
     // get_state gets the value for given namespace and key. For a contract, the namespace corresponds to the contractId
     fn get_state(&self, namespace: &str, key: &str) -> Result<Option<VersionedValue>>;
 

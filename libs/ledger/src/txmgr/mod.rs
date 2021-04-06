@@ -4,10 +4,17 @@ use crate::statedb::{Height, VersionedDB};
 use error::*;
 use protos::Block;
 
+pub struct TxStatInfo {
+    pub validation_code: protos::TxValidationCode,
+    pub tx_type: protos::HeaderType,
+    pub contract_id: protos::ContractId,
+    pub num_collections: i32,
+}
+
 pub trait TxMgr {
     type T: TxSimulator;
     fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::T>;
-    fn validate_and_prepare(&self, block: &Block) -> Result<()>;
+    fn validate_and_prepare(&self, block: &Block) -> Result<Vec<TxStatInfo>>;
     fn get_last_savepoint(&self) -> Result<Height>;
     fn should_recover(&self, last_available_block: u64) -> Result<(bool, u64)>;
     fn commit(&self) -> Result<()>;
@@ -31,10 +38,11 @@ impl<V: VersionedDB> TxMgr for LockBasedTxMgr<V> {
     type T = BasedTxSimulator<V>;
 
     fn new_tx_simulator(&self, tx_id: &str) -> Result<Self::T> {
-        todo!()
+        let sim = BasedTxSimulator::new(tx_id.to_string(), self.vdb.clone());
+        Ok(sim)
     }
 
-    fn validate_and_prepare(&self, block: &Block) -> Result<()> {
+    fn validate_and_prepare(&self, block: &Block) -> Result<Vec<TxStatInfo>> {
         todo!()
     }
 
@@ -56,13 +64,13 @@ mod tests {
     use error::*;
     use protos::*;
 
-    use crate::rwset::validate::Validator;
     use crate::simulator::sim::BasedTxSimulator;
     use crate::simulator::TxSimulator;
     use crate::statedb::{
         Height, VersionedDB, VersionedDBProvider, VersionedDBRocksProvider, VersionedValue,
     };
     use tempfile::TempDir;
+    use crate::validator::validate::Validator;
 
     #[test]
     fn it_works() {

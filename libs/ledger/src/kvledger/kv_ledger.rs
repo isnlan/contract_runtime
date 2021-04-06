@@ -84,6 +84,7 @@ impl<S: BlockStore, T: TxMgr> crate::Ledger for KVLedger<S, T> {
     }
 
     fn commit_legacy(&self, block: Block) -> Result<()> {
+        // self.tx_mgmt.validate_and_prepare(&block)
         unimplemented!()
     }
 }

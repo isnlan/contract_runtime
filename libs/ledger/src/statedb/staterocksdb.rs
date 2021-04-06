@@ -31,17 +31,20 @@ impl VersionedDBProvider for VersionedDBRocksProvider {
     type V = RocksDBVersion;
 
     fn get_db_handle(&self, id: &str) -> Result<RocksDBVersion> {
-        if !self.handler.contains_key(id) {
-            let name = String::from(id);
-            let path = file_path::state_db_path(&self.path, id);
-            let db = Arc::new(rocksdb::DB::open_default(path)?);
-            self.handler
-                .insert(name.clone(), RocksDBVersion { db, name });
+        match self.handler.get(id) {
+            Some(db) => {
+                let db = &*db;
+                Ok(db.clone())
+            }
+            None => {
+                    let name = String::from(id);
+                    let path = file_path::state_db_path(&self.path, id);
+                    let db = Arc::new(rocksdb::DB::open_default(path)?);
+                    let vdb = RocksDBVersion{db, name: name.clone()};
+                    self.handler.insert(name, vdb.clone());
+                    Ok(vdb)
+            }
         }
-
-        let db = self.handler.get(id).unwrap();
-        let db = &*db;
-        Ok(db.clone())
     }
 }
 
