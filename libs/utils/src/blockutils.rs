@@ -25,23 +25,6 @@ pub fn init_tx_validation_flags(block: &mut Block) {
     uninit.insert(index, metadata);
 
     block.metadata = Some(BlockMetadata{metadata: uninit});
-    //
-    // match block.metadata.as_mut() {
-    //     Some(m) => {
-    //         if m.metadata.len() < block_metadata_index_name().len() {
-    //            m.metadata = md;
-    //         }
-    //     }
-    //     None => {
-    //
-    //         block.metadata = Some(BlockMetadata{metadata:uninit_metadata()});
-    //         block.metadata.insert(index, metadata)
-    //     }
-    // }
-    //
-    // if let Some(data) = block.metadata.as_mut() {
-    //     data.metadata.insert(index, metadata);
-    // }
 }
 
 fn uninit_metadata() -> Vec<Vec<u8>> {

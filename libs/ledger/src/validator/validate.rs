@@ -4,11 +4,11 @@ use crate::rwset::builder::TxRwSet;
 use crate::rwset::key::{self, PubAndHashUpdates};
 use crate::statedb::{self, Height, UpdateBatch, VersionedDB};
 use protos::*;
-use std::collections::HashMap;
+
 use std::convert::TryFrom;
-use crate::txmgr::TxStatInfo;
-use protos::BlockMetadataIndex::TransactionsFilter;
-use std::borrow::BorrowMut;
+
+
+
 
 pub struct Validator<V: VersionedDB> {
     vdb: V,
@@ -24,8 +24,8 @@ impl<V: VersionedDB> Validator<V> {
 
         let header = block.header.as_ref().ok_or(anyhow!("block header is null"))?;
         let data = block.data.as_ref().ok_or(anyhow!("block data is null"))?;
-        let mut metadata = block.metadata.as_mut().ok_or(anyhow!("block metadata is null"))?;
-        let mut txs_filter = metadata.metadata.get_mut(BlockMetadataIndex::TransactionsFilter as usize)
+        let metadata = block.metadata.as_mut().ok_or(anyhow!("block metadata is null"))?;
+        let txs_filter = metadata.metadata.get_mut(BlockMetadataIndex::TransactionsFilter as usize)
             .ok_or(anyhow!("metadata TransactionsFilter not set"))?;
 
         let mut updates = PubAndHashUpdates::new();
