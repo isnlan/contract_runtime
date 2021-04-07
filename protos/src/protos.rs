@@ -246,6 +246,18 @@ pub struct BlockMetadata {
     pub metadata: ::std::vec::Vec<std::vec::Vec<u8>>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Metadata {
+    #[prost(bytes, tag = "1")]
+    pub value: std::vec::Vec<u8>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum BlockMetadataIndex {
+    Signatures = 0,
+    TransactionsFilter = 1,
+    CommitHash = 2,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Message {
     #[prost(enumeration = "message::MessageType", tag = "1")]
     pub message_type: i32,

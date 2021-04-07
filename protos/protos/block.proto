@@ -27,3 +27,13 @@ message BlockData {
 message BlockMetadata {
     repeated bytes metadata = 1;
 }
+
+message Metadata {
+    bytes value = 1;
+}
+
+enum BlockMetadataIndex {
+    SIGNATURES = 0;
+    TRANSACTIONS_FILTER = 1;
+    COMMIT_HASH = 2;
+}

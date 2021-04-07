@@ -6,6 +6,9 @@ use crate::statedb::{self, Height, UpdateBatch, VersionedDB};
 use protos::*;
 use std::collections::HashMap;
 use std::convert::TryFrom;
+use crate::txmgr::TxStatInfo;
+use protos::BlockMetadataIndex::TransactionsFilter;
+use std::borrow::BorrowMut;
 
 pub struct Validator<V: VersionedDB> {
     vdb: V,
@@ -16,61 +19,85 @@ impl<V: VersionedDB> Validator<V> {
         Validator { vdb }
     }
 
-    pub fn validate_and_prepare_batch(
-        &self,
-        block: Block,
-    ) -> Result<(UpdateBatch, Height, HashMap<String, TxValidationCode>)> {
-        if let (Some(header), Some(data)) = (block.header, block.data) {
-            debug!(
-                "validate_and_prepare_batch for block number = {:}",
-                header.number
-            );
-            let mut txs_filter = HashMap::new();
-            let mut updates = PubAndHashUpdates::new();
+    pub fn validate_and_prepare_batch(&self, block: &mut Block) -> Result<(UpdateBatch, Height)> {
+        utils::blockutils::init_tx_validation_flags(block);
 
-            for (index, proto_msg) in data.data.iter().enumerate() {
-                let tx: Transaction = utils::proto::unmarshal(proto_msg)?;
-                let proposal = tx
-                    .signed_proposal
-                    .ok_or_else(|| anyhow!("proposal is null"))?;
-                let tx_header = utils::proto::unmarshal::<Proposal>(&proposal.proposal_bytes)?
-                    .header
-                    .ok_or_else(|| anyhow!("transaction header is null"))?;
+        let header = block.header.as_ref().ok_or(anyhow!("block header is null"))?;
+        let data = block.data.as_ref().ok_or(anyhow!("block data is null"))?;
+        let mut metadata = block.metadata.as_mut().ok_or(anyhow!("block metadata is null"))?;
+        let mut txs_filter = metadata.metadata.get_mut(BlockMetadataIndex::TransactionsFilter as usize)
+            .ok_or(anyhow!("metadata TransactionsFilter not set"))?;
 
-                let resp = tx
-                    .response
-                    .get(0)
-                    .ok_or_else(|| anyhow!("transaction proposal response list is null"))?;
-                let payload: ProposalResponsePayload = utils::proto::unmarshal(&resp.payload)?;
-                let tx_read_write_set: TxReadWriteSet = utils::proto::unmarshal(&payload.results)?;
-                let tx_rw_set = TxRwSet::try_from(tx_read_write_set)?;
-                if self.validate_writeset(&tx_rw_set).is_err() {
-                    // TODO:record this transaction
-                    txs_filter.insert(tx_header.tx_id.clone(), TxValidationCode::InvalidWriteset);
+        let mut updates = PubAndHashUpdates::new();
+
+        for (index, proto_msg) in data.data.iter().enumerate() {
+            let tx: Transaction = utils::proto::unmarshal(proto_msg)?;
+            let proposal = tx
+                .signed_proposal
+                .ok_or_else(|| anyhow!("proposal is null"))?;
+            let tx_header = utils::proto::unmarshal::<Proposal>(&proposal.proposal_bytes)?
+                .header
+                .ok_or_else(|| anyhow!("transaction header is null"))?;
+
+
+            let resp = match tx.response.get(0) {
+                Some(v) => v,
+                None => {
+                    txs_filter[index] = TxValidationCode::NilTxaction as u8;
                     continue;
                 }
+            };
 
-                let validation_code = self.validate_tx(&tx_rw_set, &mut updates)?;
 
-                if validation_code == TxValidationCode::Valid {
-                    debug!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as valid by state validator.  [{:?}]", header.number, index, tx_header.tx_id, validation_code);
-                    let _ = updates
-                        .apply_write_set(tx_rw_set, Height::new(header.number, index as u64));
-                } else {
-                    warn!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as invalid by state validator. Reason code [{:?}]",
-                          header.number, index, tx_header.tx_id, validation_code);
+            let payload: ProposalResponsePayload = match utils::proto::unmarshal(&resp.payload) {
+                Ok(v) => v,
+                Err(e) => {
+                    error!("unmarshal tx response payload error: {:}", e);
+                    txs_filter[index] =  TxValidationCode::InvalidOtherReason as u8;
+                    continue;
                 }
-                txs_filter.insert(tx_header.tx_id.clone(), validation_code);
+            };
+
+
+            let tx_read_write_set: TxReadWriteSet = match utils::proto::unmarshal(&payload.results) {
+                Ok(v) => v,
+                Err(e) => {
+                    error!("unmarshal  tx read write set error: {:}", e);
+                    txs_filter[index] = TxValidationCode::InvalidOtherReason as u8;
+                    continue;
+                }
+            };
+
+            let tx_rw_set = match TxRwSet::try_from(tx_read_write_set) {
+                Ok(v) => v,
+                Err(e) => {
+                    error!("try from txRwSet error: {:}", e);
+                    txs_filter[index] = TxValidationCode::InvalidWriteset as u8;
+                    continue;
+                }
+            };
+
+            if self.validate_writeset(&tx_rw_set).is_err() {
+                txs_filter[index] = TxValidationCode::InvalidWriteset as u8;
+                continue;
             }
 
-            return Ok((
-                UpdateBatch::from(updates),
-                Height::new(header.number, (data.data.len() - 1) as u64),
-                txs_filter,
-            ));
-        }
+            let validation_code = self.validate_tx(&tx_rw_set, &mut updates)?;
 
-        Err(anyhow!("block content is null"))
+            if validation_code == TxValidationCode::Valid {
+                debug!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as valid by state validator.  [{:?}]", header.number, index, tx_header.tx_id, validation_code);
+                let _ = updates
+                    .apply_write_set(tx_rw_set, Height::new(header.number, index as u64));
+            } else {
+                warn!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as invalid by state validator. Reason code [{:?}]",
+                      header.number, index, tx_header.tx_id, validation_code);
+            }
+            txs_filter[index] =  validation_code as u8;
+        }
+        return Ok((
+            UpdateBatch::from(updates),
+            Height::new(header.number, (data.data.len() - 1) as u64),
+        ));
     }
 
     fn validate_writeset(&self, tx_rw_set: &TxRwSet) -> Result<()> {

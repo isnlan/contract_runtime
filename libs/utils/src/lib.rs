@@ -6,6 +6,7 @@ pub mod proto;
 pub mod random;
 pub mod time;
 pub mod utils;
+pub mod blockutils;
 
 #[macro_use]
 extern crate hex_literal;

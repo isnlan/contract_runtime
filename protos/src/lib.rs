@@ -1,5 +1,6 @@
 mod protos;
 pub use protos::*;
+use std::collections::HashMap;
 
 pub fn tx_validation_code_from(code: i32) -> TxValidationCode {
     match code {
@@ -69,6 +70,14 @@ pub fn tx_validation_code_from(code: i32) -> TxValidationCode {
         code if code == TxValidationCode::InvalidOtherReason as i32 => {
             TxValidationCode::InvalidOtherReason
         }
-        _ => TxValidationCode::NilEnvelope,
+        _ => TxValidationCode::InvalidOtherReason,
     }
+}
+
+pub fn block_metadata_index_name() -> HashMap<i32, BlockMetadataIndex> {
+    let mut map = HashMap::with_capacity(3);
+    map.insert(0, BlockMetadataIndex::Signatures);
+    map.insert(1, BlockMetadataIndex::TransactionsFilter);
+    map.insert(2, BlockMetadataIndex::CommitHash);
+    map
 }
