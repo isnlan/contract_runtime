@@ -7,7 +7,9 @@ use ledger::Initializer;
 
 pub mod peer;
 
-pub fn new(init: Initializer) -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>> {
+pub fn new(
+    init: Initializer,
+) -> Result<peer::Peer<Provider<VersionedDBRocksProvider, LevelDBBlockStoreProvider>>> {
     let vp = VersionedDBRocksProvider::new(&init.root_fs_path);
     let bsp = LevelDBBlockStoreProvider::new(&init.root_fs_path);
     let provider = Provider::new(init, vp, bsp)?;

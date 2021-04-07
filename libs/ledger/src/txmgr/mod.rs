@@ -123,7 +123,7 @@ mod tests {
                 data_hash: vec![],
             }),
             data: Some(BlockData { data }),
-            metadata: Some(BlockMetadata{ metadata: vec![] }),
+            metadata: Some(BlockMetadata { metadata: vec![] }),
         }
     }
     fn create_tx(rw_set: TxReadWriteSet, txid: String) -> Result<Transaction> {
@@ -189,7 +189,7 @@ mod tests {
             let results = sim.get_tx_simulation_results().unwrap();
 
             let tx = create_tx(results.simulation_results, "tx0".to_string()).unwrap();
-            let mut  block = create_block(vec![tx], 1);
+            let mut block = create_block(vec![tx], 1);
 
             let (batch, h) = validate.validate_and_prepare_batch(&mut block).unwrap();
             println!("{:?} \n {:?}", batch, h);
@@ -233,8 +233,20 @@ mod tests {
             //     Some(&TxValidationCode::MvccReadConflict)
             // );
 
-            let m: &Vec<u8> = block.metadata.as_ref().unwrap().metadata.get(BlockMetadataIndex::TransactionsFilter as usize).unwrap();
-            assert_eq!(m, &vec![TxValidationCode::Valid as u8, TxValidationCode::MvccReadConflict as u8]);
+            let m: &Vec<u8> = block
+                .metadata
+                .as_ref()
+                .unwrap()
+                .metadata
+                .get(BlockMetadataIndex::TransactionsFilter as usize)
+                .unwrap();
+            assert_eq!(
+                m,
+                &vec![
+                    TxValidationCode::Valid as u8,
+                    TxValidationCode::MvccReadConflict as u8
+                ]
+            );
 
             let v1 = vdb
                 .get_state(&"ns".to_string(), &"key1".to_string())

@@ -7,9 +7,6 @@ use protos::*;
 
 use std::convert::TryFrom;
 
-
-
-
 pub struct Validator<V: VersionedDB> {
     vdb: V,
 }
@@ -22,10 +19,18 @@ impl<V: VersionedDB> Validator<V> {
     pub fn validate_and_prepare_batch(&self, block: &mut Block) -> Result<(UpdateBatch, Height)> {
         utils::blockutils::init_tx_validation_flags(block);
 
-        let header = block.header.as_ref().ok_or(anyhow!("block header is null"))?;
+        let header = block
+            .header
+            .as_ref()
+            .ok_or(anyhow!("block header is null"))?;
         let data = block.data.as_ref().ok_or(anyhow!("block data is null"))?;
-        let metadata = block.metadata.as_mut().ok_or(anyhow!("block metadata is null"))?;
-        let txs_filter = metadata.metadata.get_mut(BlockMetadataIndex::TransactionsFilter as usize)
+        let metadata = block
+            .metadata
+            .as_mut()
+            .ok_or(anyhow!("block metadata is null"))?;
+        let txs_filter = metadata
+            .metadata
+            .get_mut(BlockMetadataIndex::TransactionsFilter as usize)
             .ok_or(anyhow!("metadata TransactionsFilter not set"))?;
 
         let mut updates = PubAndHashUpdates::new();
@@ -39,7 +44,6 @@ impl<V: VersionedDB> Validator<V> {
                 .header
                 .ok_or_else(|| anyhow!("transaction header is null"))?;
 
-
             let resp = match tx.response.get(0) {
                 Some(v) => v,
                 None => {
@@ -48,18 +52,17 @@ impl<V: VersionedDB> Validator<V> {
                 }
             };
 
-
             let payload: ProposalResponsePayload = match utils::proto::unmarshal(&resp.payload) {
                 Ok(v) => v,
                 Err(e) => {
                     error!("unmarshal tx response payload error: {:}", e);
-                    txs_filter[index] =  TxValidationCode::InvalidOtherReason as u8;
+                    txs_filter[index] = TxValidationCode::InvalidOtherReason as u8;
                     continue;
                 }
             };
 
-
-            let tx_read_write_set: TxReadWriteSet = match utils::proto::unmarshal(&payload.results) {
+            let tx_read_write_set: TxReadWriteSet = match utils::proto::unmarshal(&payload.results)
+            {
                 Ok(v) => v,
                 Err(e) => {
                     error!("unmarshal  tx read write set error: {:}", e);
@@ -86,13 +89,13 @@ impl<V: VersionedDB> Validator<V> {
 
             if validation_code == TxValidationCode::Valid {
                 debug!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as valid by state validator.  [{:?}]", header.number, index, tx_header.tx_id, validation_code);
-                let _ = updates
-                    .apply_write_set(tx_rw_set, Height::new(header.number, index as u64));
+                let _ =
+                    updates.apply_write_set(tx_rw_set, Height::new(header.number, index as u64));
             } else {
                 warn!("Block [{:?}] Transaction index [{:?}] TxId [{:?}] marked as invalid by state validator. Reason code [{:?}]",
                       header.number, index, tx_header.tx_id, validation_code);
             }
-            txs_filter[index] =  validation_code as u8;
+            txs_filter[index] = validation_code as u8;
         }
         return Ok((
             UpdateBatch::from(updates),
