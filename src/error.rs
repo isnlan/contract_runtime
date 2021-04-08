@@ -3,6 +3,7 @@ use actix_web::{HttpResponse, ResponseError};
 use std::fmt;
 use std::fmt::Formatter;
 use thiserror::Error;
+use std::string::FromUtf8Error;
 
 #[derive(Error, Debug)]
 pub struct HttpResponseError(pub anyhow::Error);
@@ -25,5 +26,11 @@ impl ResponseError for HttpResponseError {
 impl From<anyhow::Error> for HttpResponseError {
     fn from(err: anyhow::Error) -> Self {
         HttpResponseError(err)
+    }
+}
+
+impl From<FromUtf8Error> for HttpResponseError {
+    fn from(err: FromUtf8Error) -> Self {
+        HttpResponseError(err.into())
     }
 }

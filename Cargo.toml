@@ -19,11 +19,15 @@ argparse = "0.2.2"
 thiserror = "1.0.24"
 anyhow = "1.0.39"
 actix-web="3.3.2"
+actix-multipart = "0.3"
+futures = "0.3.1"
+sanitize-filename = "0.2"
 config = "0.11.0"
 serde = "1.0.117"
 async-trait = "0.1.42"
 chrono = "0.4.19"
 utils = { path = "./libs/utils" }
+error = { path = "./libs/error" }
 
 [workspace]
 members = [
