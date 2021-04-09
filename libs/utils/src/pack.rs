@@ -1,11 +1,11 @@
 use error::*;
 use infer::archive::is_zip;
 use std::fs::File;
+use std::io::Cursor;
+use std::path::Path;
 use std::{fs, io};
 use zip::read::read_zipfile_from_stream;
-use std::io::Cursor;
 use zip::ZipArchive;
-use std::path::Path;
 
 pub fn unpack(v: &[u8], dist: Option<&str>) -> Result<()> {
     if is_zip(v) {
@@ -65,13 +65,13 @@ pub fn unpack_zip(v: &[u8], dist: Option<&str>) -> Result<()> {
 
         // Get and Set permissions
         #[cfg(unix)]
-            {
-                use std::os::unix::fs::PermissionsExt;
+        {
+            use std::os::unix::fs::PermissionsExt;
 
-                if let Some(mode) = file.unix_mode() {
-                    fs::set_permissions(&outpath, fs::Permissions::from_mode(mode))?;
-                }
+            if let Some(mode) = file.unix_mode() {
+                fs::set_permissions(&outpath, fs::Permissions::from_mode(mode))?;
             }
+        }
     }
 
     Ok(())
