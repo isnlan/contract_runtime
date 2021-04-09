@@ -29,6 +29,7 @@ chrono = "0.4.19"
 utils = { path = "./libs/utils" }
 error = { path = "./libs/error" }
 
+
 [workspace]
 members = [
     "protos",

@@ -7,6 +7,10 @@ pub mod proto;
 pub mod random;
 pub mod time;
 pub mod utils;
+pub mod pack;
 
 #[macro_use]
 extern crate hex_literal;
+
+#[macro_use]
+extern crate log;

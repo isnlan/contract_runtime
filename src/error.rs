@@ -34,3 +34,9 @@ impl From<FromUtf8Error> for HttpResponseError {
         HttpResponseError(err.into())
     }
 }
+
+impl From<std::io::Error> for HttpResponseError {
+    fn from(err: std::io::Error) -> Self {
+        HttpResponseError(err.into())
+    }
+}

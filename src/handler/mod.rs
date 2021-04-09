@@ -1,9 +1,13 @@
 use crate::{model, service};
 use actix_web::{web, Responder};
-use std::sync;
+use std::{sync, fs};
 use actix_multipart::{Multipart, Field};
 use futures::{StreamExt, TryStreamExt};
 use error::*;
+use crate::repl::CommandType;
+use std::io::{Write, Seek, SeekFrom};
+use utils::pack::{ZipUnpack, Unpack};
+use std::path::PathBuf;
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(
@@ -73,6 +77,12 @@ pub async fn command(
                     None => continue,
                 };
                 info!("file name: {}", fname);
+                let path= write_file(field, fname).await?;
+
+                let unpack = ZipUnpack{};
+                let f = fs::File::open(&path).map_err(|e|anyhow!("open file: {} error: {:}", path, e))?;
+                unpack.unpack(&f).map_err(|e|anyhow!("unpack file error: {:?}", e))?;
+
             },
             _ => continue,
         };
@@ -80,7 +90,32 @@ pub async fn command(
 
     let command = command.ok_or_else(||anyhow!("command line is null"))?;
     info!("command: {}, contract name: {:?},contract type: {:?}, env: {:?}", command, name, contract_type, env);
-    model::Response::ok("success!").json()
+
+    let output = match CommandType::new(&command)? {
+        CommandType::Help => {
+            r#"Welcome to use the blockchain smart contract runtime, we will provide you
+               with the complete contract test、running and call contract, you can use the commands below:
+                    help
+                    build
+                    setup
+            "#.to_string()
+        }
+        CommandType::Build => {
+            "build".to_string()
+        }
+        CommandType::Setup => {
+            "setup".to_string()
+        }
+        CommandType::Command(c) => {
+            c
+        }
+        CommandType::Unknown(c) => {
+            format!("unknown command {}, please use `help`", c)
+        }
+    };
+
+
+    model::Response::ok(output).json()
 }
 
 async fn read_field(mut field: Field) -> Result<Vec<u8>> {
@@ -90,4 +125,20 @@ async fn read_field(mut field: Field) -> Result<Vec<u8>> {
         content.append(&mut data.to_vec());
     }
     Ok(content)
+}
+
+async fn write_file(mut field: Field, fname: &str) -> Result<(String)> {
+    let filepath = format!("{}", sanitize_filename::sanitize(fname));
+    let path = filepath.clone();
+    let mut f = web::block(move ||std::fs::File::create(path)).await?;
+
+    while let Some(chunk) = field.next().await {
+        let data = chunk.map_err(|e|anyhow!("multipart error: {:}", e))?;
+        f = web::block(move || f.write_all(&data).map(|_| f)).await.map_err(|e|anyhow!("write file error: {:?}", e))?;
+    }
+
+    f.flush()?;
+    info!("success write file: {:?}", filepath);
+
+    Ok((filepath))
 }

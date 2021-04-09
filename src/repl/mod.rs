@@ -1,5 +1,6 @@
 use argparse::{ArgumentParser, Store};
 use std::io::{stderr, stdout};
+use error::*;
 
 #[derive(Debug, PartialEq)]
 pub enum CommandType {
@@ -11,13 +12,13 @@ pub enum CommandType {
 }
 
 impl CommandType {
-    pub fn new(command: &str) -> CommandType {
+    pub fn new(command: &str) -> Result<CommandType> {
         let v = command
             .split(" ")
             .map(|s| String::from(s))
             .collect::<Vec<String>>();
 
-        match v[0].as_ref() {
+        let c = match v[0].as_ref() {
             "help" => CommandType::Help,
             "build" => CommandType::Build,
             "setup" => CommandType::Setup,
@@ -27,13 +28,14 @@ impl CommandType {
                     let mut ap = ArgumentParser::new();
                     ap.refer(&mut input)
                         .add_option(&["--input"], Store, r#"Output source"#);
-                    ap.parse(v, &mut stdout(), &mut stderr()).unwrap()
+                    ap.parse(v, &mut stdout(), &mut stderr()).map_err( |_|anyhow!("parse command error"))?;
                 }
 
                 CommandType::Command(input)
             }
             _ => CommandType::Unknown(command.to_string()),
-        }
+        };
+        Ok(c)
     }
 }
 
