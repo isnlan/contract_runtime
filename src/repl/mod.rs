@@ -1,6 +1,6 @@
 use argparse::{ArgumentParser, Store};
-use std::io::{stderr, stdout};
 use error::*;
+use std::io::{stderr, stdout};
 
 #[derive(Debug, PartialEq)]
 pub enum CommandType {
@@ -28,7 +28,8 @@ impl CommandType {
                     let mut ap = ArgumentParser::new();
                     ap.refer(&mut input)
                         .add_option(&["--input"], Store, r#"Output source"#);
-                    ap.parse(v, &mut stdout(), &mut stderr()).map_err( |_|anyhow!("parse command error"))?;
+                    ap.parse(v, &mut stdout(), &mut stderr())
+                        .map_err(|_| anyhow!("parse command error"))?;
                 }
 
                 CommandType::Command(input)

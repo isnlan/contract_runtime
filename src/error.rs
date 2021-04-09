@@ -2,8 +2,8 @@ use crate::model::Response;
 use actix_web::{HttpResponse, ResponseError};
 use std::fmt;
 use std::fmt::Formatter;
-use thiserror::Error;
 use std::string::FromUtf8Error;
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub struct HttpResponseError(pub anyhow::Error);

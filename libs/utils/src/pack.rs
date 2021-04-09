@@ -1,8 +1,8 @@
 use error::*;
 use infer::archive::is_zip;
+use std::fs::File;
 use std::{fs, io};
 use zip::read::read_zipfile_from_stream;
-use std::fs::File;
 
 pub trait Unpack {
     fn unpack(&self, file: &fs::File) -> Result<()>;
@@ -49,16 +49,14 @@ impl Unpack for ZipUnpack {
 
             // Get and Set permissions
             #[cfg(unix)]
-                {
-                    use std::os::unix::fs::PermissionsExt;
+            {
+                use std::os::unix::fs::PermissionsExt;
 
-                    if let Some(mode) = file.unix_mode() {
-                        fs::set_permissions(&outpath, fs::Permissions::from_mode(mode))?;
-                    }
+                if let Some(mode) = file.unix_mode() {
+                    fs::set_permissions(&outpath, fs::Permissions::from_mode(mode))?;
                 }
+            }
         }
         Ok(())
     }
 }
-
-

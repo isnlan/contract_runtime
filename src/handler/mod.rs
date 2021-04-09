@@ -1,19 +1,15 @@
-use crate::{model, service};
-use actix_web::{web, Responder};
-use std::{sync, fs};
-use actix_multipart::{Multipart, Field};
-use futures::{StreamExt, TryStreamExt};
-use error::*;
 use crate::repl::CommandType;
-use std::io::{Write};
-use utils::pack::{ZipUnpack, Unpack};
-
+use crate::{model, service};
+use actix_multipart::{Field, Multipart};
+use actix_web::{web, Responder};
+use error::*;
+use futures::{StreamExt, TryStreamExt};
+use std::io::Write;
+use std::{fs, sync};
+use utils::pack::{Unpack, ZipUnpack};
 
 pub fn app_config(config: &mut web::ServiceConfig) {
-    config.service(
-        web::scope("/api/v1")
-            .route("/command", web::post().to(command)),
-    );
+    config.service(web::scope("/api/v1").route("/command", web::post().to(command)));
 }
 
 pub struct Controller {
@@ -40,15 +36,18 @@ pub async fn build(
 }
 
 pub async fn command(
-    mut payload:  Multipart,
-    _ctrl: web::Data<sync::Arc<Controller>>, ) -> impl Responder {
+    mut payload: Multipart,
+    _ctrl: web::Data<sync::Arc<Controller>>,
+) -> impl Responder {
     let mut name = None;
     let mut contract_type = None;
     let mut env = None;
     let mut command = None;
     let _path = "fs";
     while let Ok(Some(field)) = payload.try_next().await {
-        let content_type = field.content_disposition().ok_or_else(||anyhow!("parse error"))?;
+        let content_type = field
+            .content_disposition()
+            .ok_or_else(|| anyhow!("parse error"))?;
         let param_name = match content_type.get_name() {
             Some(v) => v,
             None => continue,
@@ -58,38 +57,43 @@ pub async fn command(
             "name" => {
                 let v = read_field(field).await?;
                 name = Some(String::from_utf8(v)?);
-            },
+            }
             "contract_type" => {
                 let v = read_field(field).await?;
                 contract_type = Some(String::from_utf8(v)?);
-            },
+            }
             "env" => {
                 let v = read_field(field).await?;
                 env = Some(String::from_utf8(v)?);
-            },
+            }
             "command" => {
                 let v = read_field(field).await?;
                 command = Some(String::from_utf8(v)?);
-            },
+            }
             "file" => {
                 let fname = match content_type.get_filename() {
                     Some(v) => v,
                     None => continue,
                 };
                 info!("file name: {}", fname);
-                let path= write_file(field, fname).await?;
+                let path = write_file(field, fname).await?;
 
-                let unpack = ZipUnpack{};
-                let f = fs::File::open(&path).map_err(|e|anyhow!("open file: {} error: {:}", path, e))?;
-                unpack.unpack(&f).map_err(|e|anyhow!("unpack file error: {:?}", e))?;
-
-            },
+                let unpack = ZipUnpack {};
+                let f = fs::File::open(&path)
+                    .map_err(|e| anyhow!("open file: {} error: {:}", path, e))?;
+                unpack
+                    .unpack(&f)
+                    .map_err(|e| anyhow!("unpack file error: {:?}", e))?;
+            }
             _ => continue,
         };
     }
 
-    let command = command.ok_or_else(||anyhow!("command line is null"))?;
-    info!("command: {}, contract name: {:?},contract type: {:?}, env: {:?}", command, name, contract_type, env);
+    let command = command.ok_or_else(|| anyhow!("command line is null"))?;
+    info!(
+        "command: {}, contract name: {:?},contract type: {:?}, env: {:?}",
+        command, name, contract_type, env
+    );
 
     let output = match CommandType::new(&command)? {
         CommandType::Help => {
@@ -114,7 +118,6 @@ pub async fn command(
         }
     };
 
-
     model::Response::ok(output).json()
 }
 
@@ -130,11 +133,13 @@ async fn read_field(mut field: Field) -> Result<Vec<u8>> {
 async fn write_file(mut field: Field, fname: &str) -> Result<String> {
     let filepath = format!("{}", sanitize_filename::sanitize(fname));
     let path = filepath.clone();
-    let mut f = web::block(move ||std::fs::File::create(path)).await?;
+    let mut f = web::block(move || std::fs::File::create(path)).await?;
 
     while let Some(chunk) = field.next().await {
-        let data = chunk.map_err(|e|anyhow!("multipart error: {:}", e))?;
-        f = web::block(move || f.write_all(&data).map(|_| f)).await.map_err(|e|anyhow!("write file error: {:?}", e))?;
+        let data = chunk.map_err(|e| anyhow!("multipart error: {:}", e))?;
+        f = web::block(move || f.write_all(&data).map(|_| f))
+            .await
+            .map_err(|e| anyhow!("write file error: {:?}", e))?;
     }
 
     f.flush()?;
