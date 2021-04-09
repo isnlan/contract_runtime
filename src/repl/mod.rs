@@ -45,11 +45,11 @@ mod tests {
 
     #[test]
     fn test_new_command_tyep() {
-        assert_eq!(CommandType::Help, CommandType::new("help"));
-        assert_eq!(CommandType::Build, CommandType::new("build fs"));
+        assert_eq!(CommandType::Help, CommandType::new("help").unwrap());
+        assert_eq!(CommandType::Build, CommandType::new("build fs").unwrap());
         assert_eq!(
             CommandType::Command(String::from("s")),
-            CommandType::new("command --input s")
+            CommandType::new("command --input s").unwrap()
         );
     }
 }

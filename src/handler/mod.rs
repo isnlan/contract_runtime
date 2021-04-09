@@ -5,9 +5,9 @@ use actix_multipart::{Multipart, Field};
 use futures::{StreamExt, TryStreamExt};
 use error::*;
 use crate::repl::CommandType;
-use std::io::{Write, Seek, SeekFrom};
+use std::io::{Write};
 use utils::pack::{ZipUnpack, Unpack};
-use std::path::PathBuf;
+
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(
@@ -41,13 +41,13 @@ pub async fn build(
 
 pub async fn command(
     mut payload:  Multipart,
-    ctrl: web::Data<sync::Arc<Controller>>, ) -> impl Responder {
+    _ctrl: web::Data<sync::Arc<Controller>>, ) -> impl Responder {
     let mut name = None;
     let mut contract_type = None;
     let mut env = None;
     let mut command = None;
-    let mut path = "fs";
-    while let Ok(Some(mut field)) = payload.try_next().await {
+    let _path = "fs";
+    while let Ok(Some(field)) = payload.try_next().await {
         let content_type = field.content_disposition().ok_or_else(||anyhow!("parse error"))?;
         let param_name = match content_type.get_name() {
             Some(v) => v,
@@ -121,13 +121,13 @@ pub async fn command(
 async fn read_field(mut field: Field) -> Result<Vec<u8>> {
     let mut content: Vec<u8> = vec![];
     while let Some(chunk) = field.next().await {
-        let mut data = chunk?;
+        let data = chunk?;
         content.append(&mut data.to_vec());
     }
     Ok(content)
 }
 
-async fn write_file(mut field: Field, fname: &str) -> Result<(String)> {
+async fn write_file(mut field: Field, fname: &str) -> Result<String> {
     let filepath = format!("{}", sanitize_filename::sanitize(fname));
     let path = filepath.clone();
     let mut f = web::block(move ||std::fs::File::create(path)).await?;
@@ -140,5 +140,5 @@ async fn write_file(mut field: Field, fname: &str) -> Result<(String)> {
     f.flush()?;
     info!("success write file: {:?}", filepath);
 
-    Ok((filepath))
+    Ok(filepath)
 }
