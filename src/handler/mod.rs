@@ -6,7 +6,6 @@ use error::*;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
 use std::{fs, sync};
-use utils::pack::{Unpack, ZipUnpack};
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(web::scope("/api/v1").route("/command", web::post().to(command)));
@@ -75,15 +74,11 @@ pub async fn command(
                     Some(v) => v,
                     None => continue,
                 };
-                info!("file name: {}", fname);
-                let path = write_file(field, fname).await?;
-
-                let unpack = ZipUnpack {};
-                let f = fs::File::open(&path)
-                    .map_err(|e| anyhow!("open file: {} error: {:}", path, e))?;
-                unpack
-                    .unpack(&f)
-                    .map_err(|e| anyhow!("unpack file error: {:?}", e))?;
+                let v = read_field(field).await?;
+                let hash = utils::hash::compute_sha256(&v);
+                let hash = utils::hash::hex_to_string(&hash);
+                utils::pack::unpack(&v, Some("/home/snlan/yy"))?;
+                info!("unpack file {} success, hash: {}", fname, hash);
             }
             _ => continue,
         };
@@ -130,8 +125,8 @@ async fn read_field(mut field: Field) -> Result<Vec<u8>> {
     Ok(content)
 }
 
-async fn write_file(mut field: Field, fname: &str) -> Result<String> {
-    let filepath = format!("{}", sanitize_filename::sanitize(fname));
+async fn write_file(mut field: Field, name: &str) -> Result<String> {
+    let filepath = format!("{}", sanitize_filename::sanitize(name));
     let path = filepath.clone();
     let mut f = web::block(move || std::fs::File::create(path)).await?;
 
