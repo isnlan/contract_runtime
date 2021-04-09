@@ -32,13 +32,10 @@ pub fn unpack_zip(v: &[u8], dist: Option<&str>) -> Result<()> {
             archive_base = String::from(outpath.clone().to_str().unwrap_or(""));
         }
 
-        outpath = match dist {
-            Some(root) => {
-                let path = outpath.strip_prefix(&archive_base)?;
-                Path::new(root).join(path)
-            },
-            None => outpath
-        };
+        if let Some(root) = dist {
+            let path = outpath.strip_prefix(&archive_base)?;
+            outpath = Path::new(root).join(path);
+        }
 
         {
             let comment = file.comment();
