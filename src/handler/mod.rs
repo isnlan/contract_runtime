@@ -5,7 +5,7 @@ use actix_web::{web, Responder};
 use error::*;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
-use std::{fs, sync};
+use std::{sync};
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(web::scope("/api/v1").route("/command", web::post().to(command)));
