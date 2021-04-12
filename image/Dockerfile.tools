@@ -1,5 +1,6 @@
-FROM golang:1.15
+FROM frolvlad/alpine-glibc
+
+RUN apk --update add openssl go
 
 COPY tools/ /usr/local/bin
 
-RUN apt-get install libc6 openssl
