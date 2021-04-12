@@ -1,4 +1,5 @@
-FROM harbor-k8s.kingdeeresearch.com/kchain/contract-tools:latest
+FROM ubuntu:bionic
+
 RUN apt-get update \
  && apt-get install -y \
  libssl-dev \
