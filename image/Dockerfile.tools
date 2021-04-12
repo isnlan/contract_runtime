@@ -1,6 +1,5 @@
 FROM golang:1.15
 
-COPY tools/solc /usr/local/bin
-COPY tools/abigen /usr/local/bin
+COPY tools/ /usr/local/bin
 
-ENV PATH=$PATH:/root/bin
+RUN apt-get install libc6 openssl
