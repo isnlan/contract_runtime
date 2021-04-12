@@ -9,6 +9,7 @@ SERVICE_NAME = $(DOCKER_NS)-$(PROJECT_NAME)
 DOCKER_REGISTRY = harbor-k8s.kingdeeresearch.com
 
 DOCKER_RUN_RUST_IMAGE = harbor-k8s.kingdeeresearch.com/kchain/rust-buildenv:latest
+DOCKER_RUN_TOOLS_IMAGE = harbor-k8s.kingdeeresearch.com/kchain/contract-tools:latest
 
 IMAGE_NAME = $(DOCKER_NS)/kbcs-$(PROJECT_NAME)
 EXTRA_VERSION ?= $(shell git rev-parse --short HEAD)
@@ -77,6 +78,7 @@ prepare:
 
 buildenv: clean
 	@docker build -t $(DOCKER_RUN_RUST_IMAGE) image/ -f image/Dockerfile.env
+	@docker build -t $(DOCKER_RUN_TOOLS_IMAGE) . -f image/Dockerfile.tools
 
 build:
 	$(DRUN) \
