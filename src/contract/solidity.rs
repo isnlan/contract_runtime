@@ -1,6 +1,6 @@
+use anyhow::Context;
 use error::*;
 use std::process::Command;
-use anyhow::Context;
 
 const SOLIDITY_COMPILER: &str = "solc";
 const ABI_GENERATOR: &str = "abigen";

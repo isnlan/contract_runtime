@@ -1,6 +1,6 @@
-use std::process::Command;
-use error::*;
 use anyhow::Context;
+use error::*;
+use std::process::Command;
 
 const GO_COMPILER: &str = "go";
 const LDFLAGS: &str = "-w -extldflags \"-static\"";

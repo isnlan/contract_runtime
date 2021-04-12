@@ -2,11 +2,11 @@ use crate::repl::CommandType;
 use crate::{model, service};
 use actix_multipart::{Field, Multipart};
 use actix_web::{web, Responder};
+use anyhow::Context;
 use error::*;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
 use std::sync;
-use anyhow::Context;
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(web::scope("/api/v1").route("/command", web::post().to(command)));
@@ -76,14 +76,18 @@ pub async fn command(
                     Some(v) => v,
                     None => continue,
                 };
-                let data= read_field(field).await?;
+                let data = read_field(field).await?;
                 let hash = utils::hash::compute_sha256(&data).into_vec();
                 let hash_str = utils::hash::hex_to_string(&hash);
 
-                let path = std::env::temp_dir().join(hash_str.clone()).to_str().with_context(||"create extract dir error")?.to_string();
+                let path = std::env::temp_dir()
+                    .join(hash_str.clone())
+                    .to_str()
+                    .with_context(|| "create extract dir error")?
+                    .to_string();
                 utils::pack::unpack(&data, Some(&path))?;
                 info!("unpack file {} success, hash: {}", fname, hash_str);
-                contract_context = Some(ContractContext{
+                contract_context = Some(ContractContext {
                     data,
                     hash,
                     hash_str,
