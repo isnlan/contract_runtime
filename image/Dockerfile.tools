@@ -3,4 +3,3 @@ FROM frolvlad/alpine-glibc
 RUN apk --update add openssl go
 
 COPY tools/ /usr/local/bin
-
