@@ -6,6 +6,7 @@ use error::*;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
 use std::sync;
+use anyhow::Context;
 
 pub fn app_config(config: &mut web::ServiceConfig) {
     config.service(web::scope("/api/v1").route("/command", web::post().to(command)));
@@ -36,7 +37,7 @@ pub async fn build(
 
 pub async fn command(
     mut payload: Multipart,
-    _ctrl: web::Data<sync::Arc<Controller>>,
+    ctrl: web::Data<sync::Arc<Controller>>,
 ) -> impl Responder {
     let mut name = None;
     let mut contract_type = None;
@@ -78,7 +79,8 @@ pub async fn command(
                 let data= read_field(field).await?;
                 let hash = utils::hash::compute_sha256(&data).into_vec();
                 let hash_str = utils::hash::hex_to_string(&hash);
-                let path = format!(".tmp/{}", hash_str);
+
+                let path = std::env::temp_dir().join(hash_str.clone()).to_str().with_context(||"create extract dir error")?.to_string();
                 utils::pack::unpack(&data, Some(&path))?;
                 info!("unpack file {} success, hash: {}", fname, hash_str);
                 contract_context = Some(ContractContext{
@@ -108,7 +110,10 @@ pub async fn command(
             "#.to_string()
         }
         CommandType::Build => {
-            "build".to_string()
+            let ctype = contract_type.ok_or(anyhow!("`contact_type` not find"))?;
+            let ctx = contract_context.ok_or(anyhow!("`contract` not find"))?;
+            ctrl.svc.build(&ctype, &ctx.path)?;
+            "build success!".to_string()
         }
         CommandType::Setup => {
             "setup".to_string()

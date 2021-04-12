@@ -1,5 +1,6 @@
-use anyhow::{Context, Result};
 use std::process::Command;
+use error::*;
+use anyhow::Context;
 
 const GO_COMPILER: &str = "go";
 const LDFLAGS: &str = "-w -extldflags \"-static\"";
@@ -23,7 +24,7 @@ impl super::Contract for Chaincode {
             .arg("-ldflags")
             .arg(LDFLAGS)
             .arg("-o")
-            .arg(binary)
+            .arg(binary.clone())
             .arg(path)
             .current_dir(path)
             .output()
@@ -31,6 +32,8 @@ impl super::Contract for Chaincode {
         if !output.stderr.is_empty() {
             return Err(anyhow!(String::from_utf8(output.stderr)?));
         }
+
+        info!("build chaincode {:?} success!", binary);
 
         Ok(())
     }
