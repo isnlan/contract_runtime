@@ -42,7 +42,8 @@ pub async fn command(
     let mut contract_type = None;
     let mut env = None;
     let mut command = None;
-    let _path = "fs";
+    let mut contract_context = None;
+
     while let Ok(Some(field)) = payload.try_next().await {
         let content_type = field
             .content_disposition()
@@ -74,11 +75,18 @@ pub async fn command(
                     Some(v) => v,
                     None => continue,
                 };
-                let v = read_field(field).await?;
-                let hash = utils::hash::compute_sha256(&v);
-                let hash = utils::hash::hex_to_string(&hash);
-                utils::pack::unpack(&v, Some("/home/snlan/yy"))?;
-                info!("unpack file {} success, hash: {}", fname, hash);
+                let data= read_field(field).await?;
+                let hash = utils::hash::compute_sha256(&data).into_vec();
+                let hash_str = utils::hash::hex_to_string(&hash);
+                let path = format!(".tmp/{}", hash_str);
+                utils::pack::unpack(&data, Some(&path))?;
+                info!("unpack file {} success, hash: {}", fname, hash_str);
+                contract_context = Some(ContractContext{
+                    data,
+                    hash,
+                    hash_str,
+                    path,
+                })
             }
             _ => continue,
         };
@@ -141,4 +149,11 @@ async fn write_file(mut field: Field, name: &str) -> Result<String> {
     info!("success write file: {:?}", filepath);
 
     Ok(filepath)
+}
+
+struct ContractContext {
+    data: Vec<u8>,
+    hash: Vec<u8>,
+    hash_str: String,
+    path: String,
 }
